@@ -1,0 +1,6 @@
+# This docker-compose file builds the image
+version: '2'
+services:
+  build:
+    image: 'petzi/nginx-letsencrypt'
+    build: .

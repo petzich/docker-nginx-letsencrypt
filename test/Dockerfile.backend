@@ -1,0 +1,9 @@
+FROM petzi/nginx-letsencrypt
+
+RUN mkdir /extraconf
+COPY static_http.conf /extraconf
+
+RUN mkdir -p /extrahtml/static
+COPY index.html /extrahtml/static
+
+VOLUME /extrahtml/static

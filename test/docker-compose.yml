@@ -1,0 +1,31 @@
+# This docker-compose file runs an empty ldap server 
+version: '2'
+services:
+  test:
+    image: petzi/nginx-letsencrypt
+    environment:
+      PROXY_MODE: "dev"
+      PROXY_DOMAIN: "localhost"
+      PROXY_BACKEND: "test-backend"
+      PROXY_HTTP_PORT: "2080"
+      PROXY_HTTPS_PORT: "2443"
+      PROXY_STATIC_DIRS: "static,/extrahtml nothing,/var/www/html"
+      PROXY_AUTH_USER: "test"
+      PROXY_AUTH_PASSWORD: "password"
+    ports:
+      - "2080:2080"
+      - "2443:2443"
+    depends_on:
+      - test-backend
+    volumes_from:
+      - test-backend
+  test-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      PROXY_MODE: "dev"
+      PROXY_DOMAIN: "localhost"
+      PROXY_HTTP_PORT: "20080"
+      PROXY_HTTPS_PORT: "20443"
+      PROXY_STATIC_DIRS: "static,/var/www/html"

@@ -1,0 +1,23 @@
+server {
+    auth_basic off;
+    listen       80;
+    ssl off;
+    server_name localhost;
+
+    location /.well-known/ {
+        auth_basic off;
+        root /var/www/html;
+    }
+
+    location / {
+        return 302 https://$server_name$request_uri;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        auth_basic off;
+        root   /usr/share/nginx/html;
+    }
+}
