@@ -87,8 +87,8 @@ then
 		sed -i '/^http/a \auth_basic "test";' $nginx_conf
 		sed -i '/^auth_basic\ /a \auth_basic_user_file /etc/nginx/conf.d/auth_basic.inc;' $nginx_conf
 	else
-		sed -i 's/^auth_basic\ /auth_basic "test";/' $nginx_conf
-		sed -i 's/^auth_basic_user_file\ /auth_basic_user_file /etc/nginx/conf.d/auth_basic.inc;/' $nginx_conf
+		sed -i 's/^auth_basic.*$\ /auth_basic "test";/' $nginx_conf
+		sed -i 's/^auth_basic_user_file.*$\ /auth_basic_user_file /etc/nginx/conf.d/auth_basic.inc;/' $nginx_conf
 	fi
 fi
 
