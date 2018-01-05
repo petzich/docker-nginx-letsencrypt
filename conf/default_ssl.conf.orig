@@ -10,6 +10,9 @@ server {
         proxy_pass http://backend_server/;
         proxy_set_header Host localhost;
         proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Extension point for derived images
+        include conf.d/ssl_*.conf.inc;
     }
 
     # redirect server error pages to the static page /50x.html
