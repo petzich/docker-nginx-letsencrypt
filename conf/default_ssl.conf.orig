@@ -8,16 +8,8 @@ server {
 
     location / {
         proxy_pass http://backend_server/;
-        proxy_pass_request_headers off;
         proxy_set_header Host localhost;
         proxy_set_header X-Forwarded-Proto $scheme;
-        # Allow common headers
-        proxy_set_header Accept $http_accept;
-        proxy_set_header Accept-Language $http_accept_language;
-        proxy_set_header Accept-Encoding $http_accept_encoding;
-        proxy_set_header Cookie $http_cookie;
-        proxy_set_header DNT $http_dnt;
-        proxy_set_header User-Agent $http_user_agent;
     }
 
     # redirect server error pages to the static page /50x.html
