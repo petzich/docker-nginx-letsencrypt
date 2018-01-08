@@ -8,11 +8,14 @@ default: build test
 
 build:
 	$(COMPOSE) build
+	$(COMPOSE) -f $(TEST) build
 
 clean:
 	$(COMPOSE) down -v
 	$(COMPOSE) -f $(TEST) down -v
 	$(DOCKER) rmi test_test-backend
+	$(DOCKER) rmi test_test
+	$(DOCKER) rmi petzi/nginx-letsencrypt
 
 test:
 	$(COMPOSE) -f $(TEST) down -v

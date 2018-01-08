@@ -2,7 +2,9 @@
 version: '2'
 services:
   test:
-    image: petzi/nginx-letsencrypt
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
     environment:
       PROXY_MODE: "dev"
       PROXY_DOMAIN: "localhost"

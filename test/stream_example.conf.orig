@@ -1,0 +1,7 @@
+# This is an example configuration file
+# It does nothing, but these variables should have been replaced:
+# PROXY_BACKEND: ${PROXY_BACKEND}
+# PROXY_DOMAIN: ${PROXY_DOMAIN}
+# PROXY_HTTP_PORT: ${PROXY_HTTP_PORT}
+# PROXY_HTTPS_PORT: ${PROXY_HTTPS_PORT}
+# PROXY_MODE: ${PROXY_MODE}
