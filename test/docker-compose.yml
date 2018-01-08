@@ -23,9 +23,3 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    environment:
-      PROXY_MODE: "dev"
-      PROXY_DOMAIN: "localhost"
-      PROXY_HTTP_PORT: "20080"
-      PROXY_HTTPS_PORT: "20443"
-      PROXY_STATIC_DIRS: "static,/var/www/html"
