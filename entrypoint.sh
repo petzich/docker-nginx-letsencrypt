@@ -2,17 +2,14 @@
 
 # Prepare envsubst to replace all variables beginning with PROXY_
 function prepare_envsubst(){
-	echo "All environment variables:"
-	env
 	# All env vars beginning with PROXY_
 	es_vars=`env | grep -Eo "^PROXY_.*=" | sed -E 's/^(PROXY_.*?)=/\1/g'`
 	es_string=""
 	for i in $es_vars; do
 		es_string="$es_string\$$i"
 	done
-	echo "\$es_string: $es_string"
 	envsubst_cmd="envsubst '$es_string'"
-	echo "\$envsubst_cmd: $envsubst_cmd"
+	echo "entrypoint.sh: command for running envsubst: $envsubst_cmd"
 }
 
 echo "entrypoint.sh: Starting"
@@ -163,7 +160,7 @@ then
 	cp /extraconf/* /etc/nginx/conf.d/
 	for i in `ls -1 /etc/nginx/conf.d/stream_*.conf.orig`; do
 		output_filename=`echo $i | rev | cut -c 6- | rev`
-		echo "\$output_filename: $output_filename"
+		echo "Replacing env vars: $i -> $output_filename"
 		$envsubst_cmd < $i > $output_filename
 	done
 fi
