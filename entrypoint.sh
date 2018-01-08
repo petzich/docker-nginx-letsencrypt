@@ -85,9 +85,9 @@ then
 fi
 
 echo "entrypoint.sh: generating configuration files"
-cat /etc/nginx/conf.d/default_backend.conf.orig | sed -E "s/localhost/${PROXY_BACKEND}/" > /etc/nginx/conf.d/default_backend.conf
-cat /etc/nginx/conf.d/default.conf.orig | sed -E "s/localhost/${PROXY_DOMAIN}/" > /etc/nginx/conf.d/default.conf
-sed -i "s/^.*listen.*$/    listen ${PROXY_HTTP_PORT};/g" /etc/nginx/conf.d/default.conf
+cat /etc/nginx/conf.d/http_default_backend.conf.orig | sed -E "s/localhost/${PROXY_BACKEND}/" > /etc/nginx/conf.d/http_default_backend.conf
+cat /etc/nginx/conf.d/http_default.conf.orig | sed -E "s/localhost/${PROXY_DOMAIN}/" > /etc/nginx/conf.d/http_default.conf
+sed -i "s/^.*listen.*$/    listen ${PROXY_HTTP_PORT};/g" /etc/nginx/conf.d/http_default.conf
 
 echo "entrypoint.sh: starting nginx in background for certificate generation"
 exec nginx &
@@ -124,11 +124,11 @@ fi
 killall nginx
 sleep 1
 
-cat /etc/nginx/conf.d/default_ssl.conf.orig | sed -E "s/localhost/${PROXY_DOMAIN}/" > /etc/nginx/conf.d/default_ssl.conf
-sed -i "s/^.*listen.*$/    listen ${PROXY_HTTPS_PORT};/g" /etc/nginx/conf.d/default_ssl.conf
+cat /etc/nginx/conf.d/http_default_ssl.conf.orig | sed -E "s/localhost/${PROXY_DOMAIN}/" > /etc/nginx/conf.d/http_default_ssl.conf
+sed -i "s/^.*listen.*$/    listen ${PROXY_HTTPS_PORT};/g" /etc/nginx/conf.d/http_default_ssl.conf
 
 # Redirect to https port
-sed -i "s/^.*return.*$/        return 301 https:\/\/\$server_name:${PROXY_HTTPS_PORT}\$request_uri;/" /etc/nginx/conf.d/default.conf
+sed -i "s/^.*return.*$/        return 301 https:\/\/\$server_name:${PROXY_HTTPS_PORT}\$request_uri;/" /etc/nginx/conf.d/http_default.conf
 
 # Create the entries for static files
 stat="/etc/nginx/conf.d/default_static_dirs.conf.inc"
