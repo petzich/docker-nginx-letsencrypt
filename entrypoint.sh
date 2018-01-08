@@ -1,5 +1,20 @@
 #!/bin/sh
 
+# Prepare envsubst to replace all variables beginning with PROXY_
+function prepare_envsubst(){
+	echo "All environment variables:"
+	env
+	# All env vars beginning with PROXY_
+	es_vars=`env | grep -Eo "^PROXY_.*=" | sed -E 's/^(PROXY_.*?)=/\1/g'`
+	es_string=""
+	for i in $es_vars; do
+		es_string="$es_string\$$i"
+	done
+	echo "\$es_string: $es_string"
+	envsubst_cmd="envsubst '$es_string'"
+	echo "\$envsubst_cmd: $envsubst_cmd"
+}
+
 echo "entrypoint.sh: Starting"
 echo "PROXY_MODE: $PROXY_MODE"
 echo "PROXY_DOMAIN: $PROXY_DOMAIN"
@@ -50,15 +65,18 @@ then
     echo "WARN: PROXY_BACKEND is not set."
     echo "WARN: The hostname 'localhost' will be used."
     echo "WARN: This will most likely cause errors."
-    PROXY_BACKEND="localhost"
+    export PROXY_BACKEND="localhost"
 fi
 
 if [ -z $PROXY_HTTP_PORT ]; then
-	PROXY_HTTP_PORT="80"
+	export PROXY_HTTP_PORT="80"
 fi
 if [ -z $PROXY_HTTPS_PORT ]; then
-	PROXY_HTTPS_PORT="443"
+	export PROXY_HTTPS_PORT="443"
 fi
+
+envsubst_cmd=""
+prepare_envsubst
 
 echo "entrypoint.sh: generating acme-challenge directory"
 mkdir -p /var/www/html/.well-known/acme-challenge
@@ -85,8 +103,8 @@ then
 fi
 
 echo "entrypoint.sh: generating configuration files"
-envsubst '$PROXY_BACKEND' < /etc/nginx/conf.d/http_default_backend.conf.orig > /etc/nginx/conf.d/http_default_backend.conf
-envsubst '$PROXY_DOMAIN $PROXY_HTTP_PORT' < /etc/nginx/conf.d/http_default.conf.orig > /etc/nginx/conf.d/http_default.conf
+$envsubst_cmd < /etc/nginx/conf.d/http_default_backend.conf.orig > /etc/nginx/conf.d/http_default_backend.conf
+$envsubst_cmd < /etc/nginx/conf.d/http_default.conf.orig > /etc/nginx/conf.d/http_default.conf
 
 echo "entrypoint.sh: starting nginx in background for certificate generation"
 exec nginx &
@@ -123,7 +141,7 @@ fi
 killall nginx
 sleep 1
 
-envsubst '$PROXY_DOMAIN $PROXY_HTTPS_PORT' < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
+$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
 
 # Redirect to https port
 sed -i "s/^.*return.*$/        return 301 https:\/\/\$server_name:${PROXY_HTTPS_PORT}\$request_uri;/" /etc/nginx/conf.d/http_default.conf
