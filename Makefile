@@ -30,3 +30,6 @@ run:
 	$(COMPOSE) -f $(TEST) down -v
 	$(COMPOSE) -f $(TEST) up
 	$(COMPOSE) -f $(TEST) down -v
+
+plain-shell:
+	$(DOCKER) run -it --entrypoint /bin/sh petzi/nginx-letsencrypt
