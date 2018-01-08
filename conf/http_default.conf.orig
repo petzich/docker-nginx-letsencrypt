@@ -1,8 +1,8 @@
 server {
     auth_basic off;
-    listen       80;
+    listen ${PROXY_HTTP_PORT};
     ssl off;
-    server_name localhost;
+    server_name ${PROXY_DOMAIN};
 
     location /.well-known/ {
         auth_basic off;

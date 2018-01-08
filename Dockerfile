@@ -1,7 +1,9 @@
 FROM nginx:1.13-alpine
 
-# add letsencrypt certbot (production) and openssl for dev mode
-RUN apk add --no-cache certbot openssl
+# certbot from letsencrypt
+# openssl for self-signed certificates in dev mode
+# gettext for envsubst
+RUN apk add --no-cache certbot openssl gettext
 
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/

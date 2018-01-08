@@ -1,14 +1,14 @@
 server {
-    listen              443;
+    listen ${PROXY_HTTPS_PORT};
     ssl on;
-    ssl_certificate     /etc/letsencrypt/live/localhost/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/localhost/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/${PROXY_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${PROXY_DOMAIN}/privkey.pem;
 
     include conf.d/default_static_dirs.conf.inc;
 
     location / {
         proxy_pass http://backend_server/;
-        proxy_set_header Host localhost;
+        proxy_set_header Host ${PROXY_DOMAIN};
         proxy_set_header X-Forwarded-Proto $scheme;
 
         # Extension point for derived images

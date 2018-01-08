@@ -1,3 +1,3 @@
 upstream backend_server {
-    server localhost max_fails=3 fail_timeout=5s;
+    server ${PROXY_BACKEND} max_fails=3 fail_timeout=5s;
 }
