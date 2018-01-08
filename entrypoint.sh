@@ -64,14 +64,6 @@ echo "entrypoint.sh: generating acme-challenge directory"
 mkdir -p /var/www/html/.well-known/acme-challenge
 chown -R nginx:nginx /var/www/html/.well-known
 
-# Set daemon off in the main configuration file.
-# On restart, the directive should not be added a second time
-echo "Set daemon mode off"
-if [ `grep -c "daemon off" /etc/nginx/nginx.conf` -lt 1 ]
-then
-	sed -i -e '1idaemon off;\' /etc/nginx/nginx.conf
-fi
-
 nginx_conf="/etc/nginx/nginx.conf"
 
 # Set basic_auth in the global http section
