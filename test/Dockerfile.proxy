@@ -1,4 +1,4 @@
 FROM petzi/nginx-letsencrypt
 
 RUN mkdir /extraconf
-COPY stream_example.conf.orig /extraconf/
+COPY *.orig /extraconf/

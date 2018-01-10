@@ -158,11 +158,13 @@ if [ -d /extraconf ]
 then
 	echo "Copying /extraconf to /etc/nginx/conf.d"
 	cp /extraconf/* /etc/nginx/conf.d/
-	for i in `ls -1 /etc/nginx/conf.d/stream_*.conf.orig`; do
+	cd /etc/nginx/conf.d/
+	for i in `ls -1 stream_*.conf.orig ssl_*.conf.inc.orig`; do
 		output_filename=`echo $i | rev | cut -c 6- | rev`
 		echo "Replacing env vars: $i -> $output_filename"
 		$envsubst_cmd < $i > $output_filename
 	done
+	cd
 fi
 
 if [ -d /extrahtml ]
