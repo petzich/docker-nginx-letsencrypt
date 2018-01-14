@@ -73,7 +73,7 @@ function prepare_proxy_variables(){
 	# In PROXY_MODE==dev, this value is overriden to "localhost".
 	if [ -z ${PROXY_DOMAIN} ]
 	then
-		echo_err "PROXY_DOMAIN is not set"
+		echo_error "PROXY_DOMAIN is not set"
 		exit 1
 	else
 		le_path="/etc/letsencrypt/live/$PROXY_DOMAIN"
@@ -91,7 +91,7 @@ function prepare_proxy_variables(){
 	else
 		if [ -z ${PROXY_CERTBOT_MAIL} ]
 		then
-			echo_err "PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt"
+			echo_error "PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt"
 			exit 1
 		fi
 	fi
@@ -155,10 +155,25 @@ function set_basic_auth(){
 }
 
 # Create configuration files for HTTP mode
-function create_config_files_http(){
+function create_config_files_builtin(){
 	echo_debug "Generating nginx configuration files for http mode"
 	$envsubst_cmd < /etc/nginx/conf.d/http_default_backend.conf.orig > /etc/nginx/conf.d/http_default_backend.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default.conf.orig > /etc/nginx/conf.d/http_default.conf
+	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
+}
+
+# Disable all files that have ssl configuration if the certificate does not exist on filesystem
+function disable_ssl_config(){
+	if [ ! -f $le_privkey ] || [ ! -f $le_fullchain ]
+	then
+		files_with_cert_refs=`grep -l "ssl_certificate" /etc/nginx/conf.d/*`
+		for f in $files_with_cert_refs; do
+			echo_info "** Temporarily disabling config (no ssl certificate exists yet)"
+			echo_info "* src:  $f"
+			echo_info "* dst: $f.disabled"
+			mv $f "$f.disabled"
+		done
+	fi
 }
 
 # Generate a certificate
@@ -193,10 +208,19 @@ function generate_certificate(){
 	fi
 }
 
+function enable_disabled_config(){
+	disabled_files=`ls -1 /etc/nginx/conf.d/*.disabled`
+	for f in $disabled_files; do
+		output_filename=`echo $f | rev | cut -c 10- | rev`
+		echo_info "** Re-enabling disabled config:"
+		echo_info "* src:  $f"
+		echo_info "* dst: $output_filename"
+		mv $f $output_filename
+	done
+}
+
 # Some setup after certificate generation
 function post_certificate_setup(){
-	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
-
 	# Redirect to https port
 	sed -i "s/^.*return.*$/        return 301 https:\/\/\$server_name:${PROXY_HTTPS_PORT}\$request_uri;/" /etc/nginx/conf.d/http_default.conf
 }
@@ -245,18 +269,20 @@ prepare_proxy_variables
 prepare_envsubst
 create_acme_challenge_dir
 set_basic_auth
-create_config_files_http
+create_config_files_builtin
+create_static_files_entries
+prepare_extraconf
 
+disable_ssl_config
 echo_debug "Starting nginx in background for certificate generation"
 exec nginx &
 sleep 1
 generate_certificate
 killall nginx
 sleep 1
+enable_disabled_config
 post_certificate_setup
 
-create_static_files_entries
-prepare_extraconf
 copy_extrahtml
 
 # And last but not least the most important action: call nginx.
