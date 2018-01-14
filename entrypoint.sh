@@ -209,7 +209,7 @@ function generate_certificate(){
 }
 
 function enable_disabled_config(){
-	disabled_files=`ls -1 /etc/nginx/conf.d/*.disabled`
+	disabled_files=`ls -1 /etc/nginx/conf.d/*.disabled 2>/dev/null`
 	for f in $disabled_files; do
 		output_filename=`echo $f | rev | cut -c 10- | rev`
 		echo_info "** Re-enabling disabled config:"
