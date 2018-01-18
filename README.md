@@ -20,7 +20,7 @@ The following environment variables are defined:
 * `PROXY_HTTP_PORT` (optional): The port for the HTTP server
 * `PROXY_HTTPS_PORT` (optional): The port for the HTTPS server
 * `PROXY_CERTBOT_MAIL`: The email address for the certbot. Optional if running in dev mode.
-* `PROXY_BACKEND`: The hostname of the backend being served by the proxy. Should be supplied, or the proxy connects to localhost, probably not serving any useful results.
+* `PROXY_BACKENDS`: A space-separated list of the backend hostnames to balance the requests to.
 * `PROXY_STATIC_DIRS` (optional): a space-separated list of directory names you would like nginx to serve statically.
 * `PROXY_AUTH_USER` (optional): username to protect access to HTTPS. HTTP is left open and redirects to the HTTPS url.
 * `PROXY_AUTH_PASSWORD`: password for the user. Required if PROXY\_AUTH\_USER is set.

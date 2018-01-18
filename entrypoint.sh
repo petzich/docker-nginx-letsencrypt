@@ -6,7 +6,7 @@ env_vars="PROXY_MODE\
 	PROXY_DOMAIN\
 	PROXY_HTTP_PORT\
 	PROXY_HTTPS_PORT\
-	PROXY_BACKEND\
+	PROXY_BACKENDS\
 	PROXY_CERTBOT_MAIL\
 	PROXY_AUTH_USER\
 	PROXY_AUTH_PASSWORD"
@@ -96,13 +96,11 @@ function prepare_proxy_variables(){
 		fi
 	fi
 
-	# PROXY_BACKEND should be set.
-	if [ -z ${PROXY_BACKEND} ]
+	# PROXY_BACKENDS should be set.
+	if [ -z ${PROXY_BACKENDS} ]
 	then
-		echo_warn "PROXY_BACKEND is not set."
-		echo_warn "The hostname 'localhost' will be used."
-		echo_warn "This will most likely cause errors."
-		export PROXY_BACKEND="localhost"
+		echo_error "PROXY_BACKENDS is not set."
+		exit 1;
 	fi
 
 	# Default values for some variables
@@ -157,9 +155,18 @@ function set_basic_auth(){
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
 	echo_debug "Generating nginx configuration files for http mode"
-	$envsubst_cmd < /etc/nginx/conf.d/http_default_backend.conf.orig > /etc/nginx/conf.d/http_default_backend.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default.conf.orig > /etc/nginx/conf.d/http_default.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
+}
+
+function create_config_backend(){
+	backend_config_string="upstream backend_server {\n ip_hash;\n"
+	for backend in $PROXY_BACKENDS; do
+		backend_config_string="$backend_config_string server $backend max_fails=3 fail_timeout=5s;\n"
+	done
+	backend_config_string="$backend_config_string}"
+	echo_debug "backend_config_string: $backend_config_string"
+	echo -e "$backend_config_string" > /etc/nginx/conf.d/http_default_backend.conf
 }
 
 # Disable all files that have ssl configuration if the certificate does not exist on filesystem
@@ -270,6 +277,7 @@ prepare_envsubst
 create_acme_challenge_dir
 set_basic_auth
 create_config_files_builtin
+create_config_backend
 create_static_files_entries
 prepare_extraconf
 
