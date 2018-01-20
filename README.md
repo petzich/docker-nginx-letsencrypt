@@ -24,6 +24,8 @@ The following environment variables are defined:
 * `PROXY_STATIC_DIRS` (optional): a space-separated list of directory names you would like nginx to serve statically.
 * `PROXY_AUTH_USER` (optional): username to protect access to HTTPS. HTTP is left open and redirects to the HTTPS url.
 * `PROXY_AUTH_PASSWORD`: password for the user. Required if PROXY\_AUTH\_USER is set.
+* `PROXY_TUNING_UPSTREAM_MAX_CONNS`: maximum number of concurrent connections to an upstream server (per server). Default value: 0 (no limits)
+* `PROXY_TUNING_WORKER_CONNECTIONS`: maximum number of worker connections to use. Default: 512.
 * `ENTRYPOINT_LOGLEVEL`: 1=error, 2=warning, 3=info [default if not set], 4=debug
 
 PROXY\_STATIC\_DIRS

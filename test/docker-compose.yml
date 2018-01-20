@@ -15,6 +15,8 @@ services:
       PROXY_STATIC_DIRS: "static,/extrahtml nothing,/var/www/html"
       PROXY_AUTH_USER: "test"
       PROXY_AUTH_PASSWORD: "password"
+      PROXY_TUNING_UPSTREAM_MAX_CONNS: "32"
+      PROXY_TUNING_WORKER_CONNECTIONS: "128"
       ENTRYPOINT_LOGLEVEL: 4
     ports:
       - "2080:2080"

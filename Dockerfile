@@ -16,5 +16,5 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
 
-COPY nginx.conf /etc/nginx/
+COPY nginx.conf.orig /etc/nginx/
 COPY conf/* /etc/nginx/conf.d/

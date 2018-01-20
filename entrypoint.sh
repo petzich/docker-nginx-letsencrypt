@@ -9,7 +9,9 @@ env_vars="PROXY_MODE\
 	PROXY_BACKENDS\
 	PROXY_CERTBOT_MAIL\
 	PROXY_AUTH_USER\
-	PROXY_AUTH_PASSWORD"
+	PROXY_AUTH_PASSWORD\
+	PROXY_TUNING_WORKER_CONNECTIONS\
+	PROXY_TUNING_UPSTREAM_MAX_CONNS"
 le_path=
 le_privkey=
 le_fullchain=
@@ -110,6 +112,13 @@ function prepare_proxy_variables(){
 	if [ -z $PROXY_HTTPS_PORT ]; then
 		export PROXY_HTTPS_PORT="443"
 	fi
+	if [ -z $PROXY_TUNING_WORKER_CONNECTIONS ]; then
+		# Many docker containers have a 1024 file descriptor limit
+		export PROXY_TUNING_WORKER_CONNECTIONS="512"
+	fi
+	if [ -z $PROXY_TUNING_UPSTREAM_MAX_CONNS ]; then
+		export PROXY_TUNING_UPSTREAM_MAX_CONNS="0";
+	fi
 
 }
 
@@ -155,6 +164,7 @@ function set_basic_auth(){
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
 	echo_debug "Generating nginx configuration files for http mode"
+	$envsubst_cmd < /etc/nginx/nginx.conf.orig > /etc/nginx/nginx.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default.conf.orig > /etc/nginx/conf.d/http_default.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
 }
@@ -162,7 +172,7 @@ function create_config_files_builtin(){
 function create_config_backend(){
 	backend_config_string="upstream backend_server {\n ip_hash;\n"
 	for backend in $PROXY_BACKENDS; do
-		backend_config_string="$backend_config_string server $backend max_fails=3 fail_timeout=5s;\n"
+		backend_config_string="$backend_config_string server $backend max_fails=3 fail_timeout=5s max_conns=$PROXY_TUNING_UPSTREAM_MAX_CONNS;\n"
 	done
 	backend_config_string="$backend_config_string}"
 	echo_debug "backend_config_string: $backend_config_string"
