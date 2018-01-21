@@ -165,6 +165,7 @@ function set_basic_auth(){
 function create_config_files_builtin(){
 	echo_debug "Generating nginx configuration files for http mode"
 	$envsubst_cmd < /etc/nginx/nginx.conf.orig > /etc/nginx/nginx.conf
+	set_basic_auth
 	$envsubst_cmd < /etc/nginx/conf.d/http_default.conf.orig > /etc/nginx/conf.d/http_default.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
 }
@@ -285,7 +286,6 @@ prepare_loglevel
 prepare_proxy_variables
 prepare_envsubst
 create_acme_challenge_dir
-set_basic_auth
 create_config_files_builtin
 create_config_backend
 create_static_files_entries
