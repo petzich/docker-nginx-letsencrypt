@@ -12,10 +12,10 @@ build:
 
 clean:
 	$(COMPOSE) down -v
-	$(COMPOSE) -f $(TEST) down -v
-	$(DOCKER) rmi test_test-backend
-	$(DOCKER) rmi test_test
-	$(DOCKER) rmi petzi/nginx-letsencrypt
+	- $(COMPOSE) -f $(TEST) down -v
+	- $(DOCKER) rmi test_test-backend
+	- $(DOCKER) rmi test_test
+	- $(DOCKER) rmi petzi/nginx-letsencrypt
 
 test:
 	$(COMPOSE) -f $(TEST) down -v
