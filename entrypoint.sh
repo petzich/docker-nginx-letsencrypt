@@ -285,8 +285,8 @@ prepare_loglevel
 prepare_proxy_variables
 prepare_envsubst
 create_acme_challenge_dir
-set_basic_auth
 create_config_files_builtin
+set_basic_auth
 create_config_backend
 create_static_files_entries
 prepare_extraconf
