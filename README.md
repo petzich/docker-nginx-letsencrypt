@@ -1,17 +1,14 @@
-petzi/nginx-letsencrypt
-=======================
+# petzi/nginx-letsencrypt
 
 A docker image combining nginx as a reverse proxy and letsencrypt.
 
-Volumes
--------
+# Volumes
 
 The following directory is defined as a volume and should be mounted into a volume container to persist the letsencrypt setting:
 
 `/etc/letsencrypt`
 
-Variables
----------
+# Variables
 
 The following environment variables are defined:
 
@@ -28,8 +25,8 @@ The following environment variables are defined:
 * `PROXY_TUNING_WORKER_CONNECTIONS`: maximum number of worker connections to use. Default: 512.
 * `ENTRYPOINT_LOGLEVEL`: 1=error, 2=warning, 3=info [default if not set], 4=debug
 
-PROXY\_STATIC\_DIRS
--------------------
+## PROXY\_STATIC\_DIRS
+
 PROXY\_STATIC\_DIRS maps locations to filepaths in the container. The format is:
 
 `<map>,<path>[ <map>,<path>]*`
@@ -38,8 +35,7 @@ An example: `css,/var/www/html images,/` will map:
 * `/css/` onto `/var/www/html/css`
 * `/images/` onto `/images/`
 
-Contributing
-------------
+# Contributing
 
 There are some development tools set up. Install vagrant and run:
 
