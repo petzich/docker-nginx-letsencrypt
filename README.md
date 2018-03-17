@@ -35,6 +35,39 @@ An example: `css,/var/www/html images,/` will map:
 * `/css/` onto `/var/www/html/css`
 * `/images/` onto `/images/`
 
+## Extending
+
+You can extend the image with your own configuration. Make your derived docker image by using
+
+`FROM petzi/nginx-letsencrypt:x.y.z`
+
+### /extraconf processing
+
+WARNING: The processing of these files might change until the 1.0 release.
+
+You can add files in a top-level-directory `/extraconf`. Those files will be processed by the entrypoint script and added to the nginx configuration. Example filenames:
+
+`http_compression.conf`
+`ssl_custom_rewrites.conf.inc`
+`stream_tcp_socket.conf.orig`
+
+#### File extension processing
+
+0. All files in `/extraconf` will be placed into the directory `/etc/nginx/conf.d`
+0. `http_*.conf` will be included in the `http` section of the main configuration
+0. `stream_*.conf` will be included in the `stream` section of the main configuration
+0. `ssl_*.conf.inc` will be included in the https configuration
+
+#### Processing of files with environment variables
+
+You can also create some files with an extension `*.orig`. Those files will be processed to replace environment variables in the configuration file and produce the corresponding file.
+
+0. `stream_*.conf.orig`: Replace environment variables and output as `stream_*.conf`
+0. `ssl_*.conf.inc.orig`: Replace environment variables and output as `ssl_*.conf.inc`
+
+You should place environment variables inside those files using the dollar sign and curly braces:
+`${MY_ENV_VAR}`. This processing is also done internally for some files in this docker image. Use the file `conf/http_default_ssl.conf.orig` as an example.
+
 ## Contributing
 
 There are some development tools set up. Install vagrant and run:
