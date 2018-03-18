@@ -1,10 +1,17 @@
 #!/bin/sh
 
-nginx_cfg_backend_string () {
-	backend_config_string="upstream backend_server {\n ip_hash;\n"
+nginx_cfg_backend_string_core () {
+	retval=""
 	for backend in $PROXY_BACKENDS; do
-		backend_config_string="$backend_config_string server $backend max_fails=3 fail_timeout=5s max_conns=$PROXY_TUNING_UPSTREAM_MAX_CONNS;\n"
+		retval="${retval}server ${backend} max_fails=3 fail_timeout=5s max_conns=${PROXY_TUNING_UPSTREAM_MAX_CONNS};\n"
 	done
-	backend_config_string="$backend_config_string}"
-	echo $backend_config_string
+	echo $retval
+}
+
+nginx_cfg_backend_string () {
+	backend_string_core=$(nginx_cfg_backend_string_core)
+	retval="upstream backend_server {\n ip_hash;\n"
+	retval="$retval $backend_string_core"
+	retval="$retval}"
+	echo $retval
 }
