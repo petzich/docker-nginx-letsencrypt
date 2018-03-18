@@ -13,6 +13,8 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx"]
 RUN rm /etc/nginx/conf.d/default.conf
 
+COPY lib/ /usr/local/lib
+
 COPY bin/ /usr/local/bin
 RUN chmod u+x /usr/local/bin/entrypoint.sh
 RUN ln -s /usr/local/bin/entrypoint.sh /entrypoint.sh

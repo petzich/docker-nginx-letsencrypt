@@ -1,5 +1,7 @@
 #!/bin/sh
 
+libdir=/usr/local/lib
+
 # Global variables created by the script
 echo_prefix="# nginx-le:"
 env_vars="PROXY_MODE\
@@ -169,12 +171,9 @@ function create_config_files_builtin(){
 	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
 }
 
+. $libdir/_nginx_cfg_backend.sh
 function create_config_backend(){
-	backend_config_string="upstream backend_server {\n ip_hash;\n"
-	for backend in $PROXY_BACKENDS; do
-		backend_config_string="$backend_config_string server $backend max_fails=3 fail_timeout=5s max_conns=$PROXY_TUNING_UPSTREAM_MAX_CONNS;\n"
-	done
-	backend_config_string="$backend_config_string}"
+	backend_config_string=$(nginx_cfg_backend_string)
 	echo_debug "backend_config_string: $backend_config_string"
 	echo -e "$backend_config_string" > /etc/nginx/conf.d/http_default_backend.conf
 }
