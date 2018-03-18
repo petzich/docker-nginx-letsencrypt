@@ -13,8 +13,9 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx"]
 RUN rm /etc/nginx/conf.d/default.conf
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod u+x /entrypoint.sh
+COPY bin/ /usr/local/bin
+RUN chmod u+x /usr/local/bin/entrypoint.sh
+RUN ln -s /usr/local/bin/entrypoint.sh /entrypoint.sh
 
 COPY nginx.conf.orig /etc/nginx/
 COPY conf/* /etc/nginx/conf.d/
