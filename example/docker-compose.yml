@@ -2,10 +2,10 @@
 version: '2'
 services:
   test:
-    image: test.frontend
+    image: petzi/nginx-letsencrypt.example.frontend
     build:
       context: .
-      dockerfile: Dockerfile.proxy
+      dockerfile: Dockerfile.example.frontend
     environment:
       PROXY_MODE: "dev"
       PROXY_DOMAIN: "localhost"
@@ -27,7 +27,7 @@ services:
       - test-backend
 
   test-backend:
-    image: test.backend
+    image: petzi/nginx-letsencrypt.example.backend
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: Dockerfile.example.backend

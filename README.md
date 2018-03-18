@@ -68,20 +68,29 @@ You can also create some files with an extension `*.orig`. Those files will be p
 You should place environment variables inside those files using the dollar sign and curly braces:
 `${MY_ENV_VAR}`. This processing is also done internally for some files in this docker image. Use the file `conf/http_default_ssl.conf.orig` as an example.
 
-## Contributing
+# Example Usage
 
-There are some development tools set up. Install vagrant and run:
+There is the directory `example` whith an example usage. It contains a `frontend` (proxy) as well as a `backend` (with an example html page).
+
+To use it:
+
+1. Install docker (CE) on your computer
+1. `cd example`
+1. `make run`
+
+Interesting URLs:
 
 ```
-vagrant up
-vagrant ssh
-make
-make run
+http://localhost:2080/ (will redirect to localhost:2443)
+https://localhost:2443/ (requires authentication test:password)
 ```
-With this you can start the test configuration from the directory `/test` in the repository. Interesting URLs:
-`http://localhost:2080/`
-`https://localhost:2443/`
-`https://localhost:2443/static`
-`https://localhost:2443/nothing`
 
-If you find any bug, a pull request is welcome. You can also submit an issue, but it will take longer to process.
+# Contributing
+
+Pull requests and issues are welcome. As a rule of thumb, pull requests will be processed faster than issues.
+
+# Developping
+
+1. Install docker (CE) on your local machine.
+1. run `make`
+1. run `make test`
