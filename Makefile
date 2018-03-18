@@ -16,6 +16,15 @@ clean:
 test: clean build
 	echo "TODO"
 
+# A minimal integration test
+.PHONY: integration-test
+integration-test: clean build
+	$(DOCKER) run -it --rm \
+		-e "PROXY_MODE=dev" \
+		-e "PROXY_DOMAIN=localhost" \
+		-e "PROXY_BACKENDS=localhost" \
+		${IMAGE_TAG} nginx -t
+
 .PHONY: shell
 shell: build
 	$(DOCKER) run -it --rm --entrypoint /bin/sh ${IMAGE_TAG}
