@@ -185,9 +185,9 @@ function disable_ssl_config(){
 	then
 		files_with_cert_refs=`grep -l "ssl_certificate" /etc/nginx/conf.d/*`
 		for f in $files_with_cert_refs; do
-			echo_info "** Temporarily disabling config (no ssl certificate exists yet)"
-			echo_info "* src:  $f"
-			echo_info "* dst: $f.disabled"
+			echo_info "-- Temporarily disabling config (no ssl certificate exists yet)"
+			echo_info "- src:  $f"
+			echo_info "- dst: $f.disabled"
 			mv $f "$f.disabled"
 		done
 	fi
@@ -229,9 +229,9 @@ function enable_disabled_config(){
 	disabled_files=`ls -1 /etc/nginx/conf.d/*.disabled 2>/dev/null`
 	for f in $disabled_files; do
 		output_filename=`echo $f | rev | cut -c 10- | rev`
-		echo_info "** Re-enabling disabled config:"
-		echo_info "* src:  $f"
-		echo_info "* dst: $output_filename"
+		echo_info "-- Re-enabling disabled config:"
+		echo_info "- src:  $f"
+		echo_info "- dst: $output_filename"
 		mv $f $output_filename
 	done
 }
