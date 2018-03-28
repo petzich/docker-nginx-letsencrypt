@@ -62,4 +62,11 @@ prepare_proxy_variables(){
 		export PROXY_TUNING_UPSTREAM_MAX_CONNS="0";
 	fi
 
+	# PROXY_AUTH_USER and PROXY_AUTH_PASSWORD are completely optional.
+	# However, if PROXY_AUTH_USER is set, PROXY_AUTH_PASSWORD must also be set.
+	if [ ! -z $PROXY_AUTH_USER ] && [ -z $PROXY_AUTH_PASSWORD ]
+	then
+		echo_error "PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
+	fi
+
 }

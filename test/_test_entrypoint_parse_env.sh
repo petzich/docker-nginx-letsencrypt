@@ -72,4 +72,14 @@ testErrorProxyCertbotMail(){
 	assertEquals "$expected" "$actual"
 }
 
+testErrorProxyAuthPassword(){
+	export PROXY_DOMAIN="example.org"
+	export PROXY_CERTBOT_MAIL="test@example.org"
+	export PROXY_BACKENDS="backend1"
+	export PROXY_AUTH_USER="user"
+	expected=" [ERROR] PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
+	actual="$(prepare_proxy_variables)"
+	assertEquals "$expected" "$actual"
+}
+
 . $wd/shunit2/shunit2
