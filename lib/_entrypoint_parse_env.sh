@@ -1,15 +1,31 @@
 #!/bin/sh
 
 # Prepare environment variables and set up defaults
-function prepare_proxy_variables(){
+prepare_proxy_variables(){
 	for ev in $env_vars; do
 		echo_debug "$ev: \$$ev"
 	done
-	# PROXY_DOMAIN must be set, or there is no use in starting the proxy.
-	# In PROXY_MODE==dev, this value is overriden to "localhost".
-	if [ -z ${PROXY_DOMAIN} ]
+
+	# Set default value of PROXY_MODE to "prod"
+	if [ -z "${PROXY_MODE}" ]
 	then
-		echo_error "PROXY_DOMAIN is not set"
+		export PROXY_MODE="prod"
+	fi
+
+	# If PROXY_MODE is dev, then a self-signed certificate will be issued
+	# to the domain localhost.
+	if [ "${PROXY_MODE}" = "dev" ]
+	then
+		echo_warn "Running in dev mode. Will use self-signed certificates."
+		echo_warn "Not recommended for integration and production setup."
+		echo_warn "Only localhost will be used as a host name."
+		export PROXY_DOMAIN="localhost"
+	fi
+
+	# PROXY_DOMAIN must be set, or there is no use in starting the proxy.
+	if [ -z "${PROXY_DOMAIN}" ]
+	then
+		echo_error "PROXY_DOMAIN is not set."
 		exit 1
 	else
 		le_path="/etc/letsencrypt/live/$PROXY_DOMAIN"
@@ -17,26 +33,18 @@ function prepare_proxy_variables(){
 		le_fullchain="$le_path/fullchain.pem"
 	fi
 
-	# If PROXY_MODE is dev, then a self-signed certificate will be issued
-	# to the domain localhost.
-	if [ ! -z ${PROXY_MODE} ] && [ ${PROXY_MODE} = "dev" ]
-	then
-		echo_warn "Running in dev mode. Will use self-signed certificates."
-		echo_warn "Not recommended for integration and production setup."
-		echo_warn "Only localhost will be used as a host name."
-	else
-		if [ -z ${PROXY_CERTBOT_MAIL} ]
-		then
-			echo_error "PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt"
-			exit 1
-		fi
-	fi
-
-	# PROXY_BACKENDS should be set.
-	if [ -z ${PROXY_BACKENDS} ]
+	# PROXY_BACKENDS must be set.
+	if [ -z "${PROXY_BACKENDS}" ]
 	then
 		echo_error "PROXY_BACKENDS is not set."
 		exit 1;
+	fi
+
+	# In PROXY_MODE other than dev, PROXY_CERTBOT_MAIL must be set
+	if [ ! "${PROXY_MODE}" = "dev" ] && [ -z "${PROXY_CERTBOT_MAIL}" ]
+	then
+		echo_error "PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt."
+		exit 1
 	fi
 
 	# Default values for some variables
