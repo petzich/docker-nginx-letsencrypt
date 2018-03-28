@@ -20,7 +20,7 @@ clean:
 
 .PHONY: test
 test: build-make-image
-	$(DOCKER) run -it --volume="${cwd}:/host" --rm ${MAKE_IMAGE} make -C /host/sharness
+	$(DOCKER) run -it --volume="${PWD}:/host" --rm ${MAKE_IMAGE} /host/test/run-tests.sh
 
 # A minimal integration test
 .PHONY: integration-test
