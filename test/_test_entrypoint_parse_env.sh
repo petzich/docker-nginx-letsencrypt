@@ -1,12 +1,11 @@
 #! /bin/sh
 
 wd="$(dirname $0)"
-. $wd/../lib/_entrypoint_debug.sh
+export libdir="$wd/../lib"
+. $wd/../lib/_entrypoint_log_setup.sh
 . $wd/../lib/_entrypoint_parse_env.sh
 
 setUp(){
-	export ENTRYPOINT_LOGLEVEL=1
-	prepare_loglevel
 	unset PROXY_MODE
 	unset PROXY_DOMAIN
 	unset PROXY_BACKENDS
@@ -50,7 +49,7 @@ testMinimalDevConfiguration(){
 
 # Test error message proxydomain
 testErrorProxyDomain(){
-	expected=" [ERROR] PROXY_DOMAIN is not set."
+	expected="0 [main] ERROR shell  - PROXY_DOMAIN is not set."
 	actual="$(prepare_proxy_variables)"
 	assertEquals "$expected" "$actual"
 }
@@ -58,7 +57,7 @@ testErrorProxyDomain(){
 # Test error proxyBackends
 testErrorProxyBackends(){
 	export PROXY_DOMAIN="example.org"
-	expected=" [ERROR] PROXY_BACKENDS is not set."
+	expected="0 [main] ERROR shell  - PROXY_BACKENDS is not set."
 	actual="$(prepare_proxy_variables)"
 	assertEquals "$expected" "$actual"
 }
@@ -67,7 +66,7 @@ testErrorProxyBackends(){
 testErrorProxyCertbotMail(){
 	export PROXY_DOMAIN="example.org"
 	export PROXY_BACKENDS="backend1"
-	expected=" [ERROR] PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt."
+	expected="0 [main] ERROR shell  - PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt."
 	actual="$(prepare_proxy_variables)"
 	assertEquals "$expected" "$actual"
 }
@@ -77,7 +76,7 @@ testErrorProxyAuthPassword(){
 	export PROXY_CERTBOT_MAIL="test@example.org"
 	export PROXY_BACKENDS="backend1"
 	export PROXY_AUTH_USER="user"
-	expected=" [ERROR] PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
+	expected="0 [main] ERROR shell  - PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
 	actual="$(prepare_proxy_variables)"
 	assertEquals "$expected" "$actual"
 }

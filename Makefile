@@ -29,7 +29,7 @@ integration-test: clean build
 		-e "PROXY_MODE=dev" \
 		-e "PROXY_DOMAIN=localhost" \
 		-e "PROXY_BACKENDS=localhost localhost" \
-		-e "ENTRYPOINT_LOGLEVEL=4" \
+		-e "ENTRYPOINT_LOGLEVEL=DEBUG" \
 		${IMAGE_TAG} nginx -t
 
 .PHONY: shell

@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # Global variables created by the script
-echo_prefix="# nginx-le:"
 env_vars="PROXY_MODE\
 	PROXY_DOMAIN\
 	PROXY_HTTP_PORT\

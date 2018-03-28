@@ -23,7 +23,7 @@ The following environment variables are defined:
 * `PROXY_AUTH_PASSWORD`: password for the user. Required if PROXY\_AUTH\_USER is set.
 * `PROXY_TUNING_UPSTREAM_MAX_CONNS`: maximum number of concurrent connections to an upstream server (per server). Default value: 0 (no limits)
 * `PROXY_TUNING_WORKER_CONNECTIONS`: maximum number of worker connections to use. Default: 512.
-* `ENTRYPOINT_LOGLEVEL`: 1=error, 2=warning, 3=info [default if not set], 4=debug
+* `ENTRYPOINT_LOGLEVEL`: ERROR, WARN, INFO, DEBUG. Default: INFO
 
 ### PROXY\_STATIC\_DIRS
 

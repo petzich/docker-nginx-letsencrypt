@@ -3,7 +3,7 @@
 # Prepare environment variables and set up defaults
 prepare_proxy_variables(){
 	for ev in $env_vars; do
-		echo_debug "$ev: \$$ev"
+		logger_debug "$ev: \$$ev"
 	done
 
 	# Set default value of PROXY_MODE to "prod"
@@ -16,16 +16,16 @@ prepare_proxy_variables(){
 	# to the domain localhost.
 	if [ "${PROXY_MODE}" = "dev" ]
 	then
-		echo_warn "Running in dev mode. Will use self-signed certificates."
-		echo_warn "Not recommended for integration and production setup."
-		echo_warn "Only localhost will be used as a host name."
+		logger_warn "Running in dev mode. Will use self-signed certificates."
+		logger_warn "Not recommended for integration and production setup."
+		logger_warn "Only localhost will be used as a host name."
 		export PROXY_DOMAIN="localhost"
 	fi
 
 	# PROXY_DOMAIN must be set, or there is no use in starting the proxy.
 	if [ -z "${PROXY_DOMAIN}" ]
 	then
-		echo_error "PROXY_DOMAIN is not set."
+		logger_error "PROXY_DOMAIN is not set."
 		exit 1
 	else
 		le_path="/etc/letsencrypt/live/$PROXY_DOMAIN"
@@ -36,14 +36,14 @@ prepare_proxy_variables(){
 	# PROXY_BACKENDS must be set.
 	if [ -z "${PROXY_BACKENDS}" ]
 	then
-		echo_error "PROXY_BACKENDS is not set."
+		logger_error "PROXY_BACKENDS is not set."
 		exit 1;
 	fi
 
 	# In PROXY_MODE other than dev, PROXY_CERTBOT_MAIL must be set
 	if [ ! "${PROXY_MODE}" = "dev" ] && [ -z "${PROXY_CERTBOT_MAIL}" ]
 	then
-		echo_error "PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt."
+		logger_error "PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt."
 		exit 1
 	fi
 
@@ -66,7 +66,7 @@ prepare_proxy_variables(){
 	# However, if PROXY_AUTH_USER is set, PROXY_AUTH_PASSWORD must also be set.
 	if [ ! -z $PROXY_AUTH_USER ] && [ -z $PROXY_AUTH_PASSWORD ]
 	then
-		echo_error "PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
+		logger_error "PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
 	fi
 
 }

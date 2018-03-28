@@ -2,8 +2,8 @@
 
 libdir=/usr/local/lib
 
+. $libdir/_entrypoint_log_setup.sh
 . $libdir/_entrypoint_global_vars.sh
-. $libdir/_entrypoint_debug.sh
 . $libdir/_entrypoint_parse_env.sh
 
 # Prepare envsubst to replace all variables beginning with PROXY_
@@ -15,12 +15,12 @@ function prepare_envsubst(){
 		es_string="$es_string\$$i"
 	done
 	envsubst_cmd="envsubst '$es_string'"
-	echo_debug "Command for running envsubst: $envsubst_cmd"
+	logger_debug "Command for running envsubst: $envsubst_cmd"
 }
 
 # Create the directory for acme challenges
 function create_acme_challenge_dir(){
-	echo_debug "Generating acme-challenge directory"
+	logger_debug "Generating acme-challenge directory"
 	mkdir -p /var/www/html/.well-known/acme-challenge
 	chown -R nginx:nginx /var/www/html/.well-known
 }
@@ -29,7 +29,7 @@ function create_acme_challenge_dir(){
 function set_basic_auth(){
 	if [ ! -z ${PROXY_AUTH_USER} ]
 	then
-		echo_info "Setting HTTP basic protection (user: $PROXY_AUTH_USER)"
+		logger_info "Setting HTTP basic protection (user: $PROXY_AUTH_USER)"
 		# Create the file first
 		echo "$PROXY_AUTH_USER:{PLAIN}$PROXY_AUTH_PASSWORD" > /etc/nginx/conf.d/auth_basic.inc
 		# Then configure auth_basic in the HTTP section
@@ -47,7 +47,7 @@ function set_basic_auth(){
 
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
-	echo_debug "Generating nginx configuration files for http mode"
+	logger_debug "Generating nginx configuration files for http mode"
 	$envsubst_cmd < /etc/nginx/nginx.conf.orig > /etc/nginx/nginx.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default.conf.orig > /etc/nginx/conf.d/http_default.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
@@ -56,7 +56,7 @@ function create_config_files_builtin(){
 . $libdir/_nginx_cfg_backend.sh
 function create_config_backend(){
 	backend_config_string=$(nginx_cfg_backend_string)
-	echo_debug "backend_config_string: $backend_config_string"
+	logger_debug "backend_config_string: $backend_config_string"
 	echo -e "$backend_config_string" > /etc/nginx/conf.d/http_default_backend.conf
 }
 
@@ -66,9 +66,9 @@ function disable_ssl_config(){
 	then
 		files_with_cert_refs=`grep -l "ssl_certificate" /etc/nginx/conf.d/*`
 		for f in $files_with_cert_refs; do
-			echo_info "-- Temporarily disabling config (no ssl certificate exists yet)"
-			echo_info "- src:  $f"
-			echo_info "- dst: $f.disabled"
+			logger_info "-- Temporarily disabling config (no ssl certificate exists yet)"
+			logger_info "- src:  $f"
+			logger_info "- dst: $f.disabled"
 			mv $f "$f.disabled"
 		done
 	fi
@@ -83,14 +83,14 @@ function generate_certificate(){
 		mkdir -p $le_path
 		if [ -f $le_privkey ]
 		then
-			echo_warn "Private key already exists, not overwriting ($le_privkey)"
+			logger_warn "Private key already exists, not overwriting ($le_privkey)"
 		else
-			echo_info "Generating self-signed certificate"
+			logger_info "Generating self-signed certificate"
 			openssl req -subj $le_dev_subject -x509 -sha256 -newkey rsa:1024 -nodes -keyout $le_privkey -out $le_fullchain -days 365
 		fi
 	elif [ -f "$le_fullchain" ]
 	then
-		echo_info "Renewing certificate"
+		logger_info "Renewing certificate"
 		certbot renew
 	else
 		# certbot is run with the following options:
@@ -101,7 +101,7 @@ function generate_certificate(){
 		# --agree-tos   = agree to terms of service (non-interactive)
 		# -m            = mail address for letsencrypt account
 		# --keep        = do not replace existing certificate, unless expiry is close
-		echo_info "Generating certificate"
+		logger_info "Generating certificate"
 		certbot certonly -n --webroot -w /var/www/html -d ${PROXY_DOMAIN} --agree-tos -m ${PROXY_CERTBOT_MAIL} --keep
 	fi
 }
@@ -110,9 +110,9 @@ function enable_disabled_config(){
 	disabled_files=`ls -1 /etc/nginx/conf.d/*.disabled 2>/dev/null`
 	for f in $disabled_files; do
 		output_filename=`echo $f | rev | cut -c 10- | rev`
-		echo_info "-- Re-enabling disabled config:"
-		echo_info "- src:  $f"
-		echo_info "- dst: $output_filename"
+		logger_info "-- Re-enabling disabled config:"
+		logger_info "- src:  $f"
+		logger_info "- dst: $output_filename"
 		mv $f $output_filename
 	done
 }
@@ -132,7 +132,7 @@ function create_static_files_entries(){
 	do
 		location=`echo $i | awk -F"," '{print $1}'`
 		directory=`echo $i | awk -F"," '{print $2}'`
-		echo_info "Creating static entry: $location -> $directory"
+		logger_info "Creating static entry: $location -> $directory"
 		echo "location /$location/ { root $directory; }" >> $stat
 	done
 }
@@ -141,12 +141,12 @@ function create_static_files_entries(){
 function prepare_extraconf(){
 	if [ -d /extraconf ]
 	then
-		echo_info "Copying /extraconf to /etc/nginx/conf.d"
+		logger_info "Copying /extraconf to /etc/nginx/conf.d"
 		cp /extraconf/* /etc/nginx/conf.d/
 		cd /etc/nginx/conf.d/
 		for i in `ls -1 stream_*.conf.orig ssl_*.conf.inc.orig`; do
 			output_filename=`echo $i | rev | cut -c 6- | rev`
-			echo_info "Replacing env vars: $i -> $output_filename"
+			logger_info "Replacing env vars: $i -> $output_filename"
 			$envsubst_cmd < $i > $output_filename
 		done
 		cd
@@ -161,7 +161,7 @@ function copy_extrahtml(){
 	fi
 }
 
-echo_with_prefix "(Nginx-Letsencrypt) starting entrypoint.sh"
+logger_info "(Nginx-Letsencrypt) starting entrypoint.sh"
 prepare_loglevel
 prepare_proxy_variables
 prepare_envsubst
@@ -173,7 +173,7 @@ create_static_files_entries
 prepare_extraconf
 
 disable_ssl_config
-echo_debug "Starting nginx in background for certificate generation"
+logger_debug "Starting nginx in background for certificate generation"
 exec nginx &
 sleep 1
 generate_certificate
@@ -185,6 +185,6 @@ post_certificate_setup
 copy_extrahtml
 
 # And last but not least the most important action: call nginx.
-echo_with_prefix "(Nginx-Letsencrypt) at end of entrypoint.sh"
-echo_with_prefix "(Nginx-Letsencrypt) running command: $@"
+logger_info "(Nginx-Letsencrypt) at end of entrypoint.sh"
+logger_info "(Nginx-Letsencrypt) running command: $@"
 exec "$@"
