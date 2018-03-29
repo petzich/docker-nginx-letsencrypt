@@ -7,6 +7,7 @@ libdir=/usr/local/lib
 . $libdir/_entrypoint_parse_env.sh
 . $libdir/_nginx_cfg_main.sh
 . $libdir/_nginx_cfg_http.sh
+. $libdir/_nginx_cfg_https.sh
 
 # Prepare envsubst to replace all variables beginning with PROXY_
 function prepare_envsubst(){
@@ -39,10 +40,10 @@ function set_basic_auth(){
 
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
-	logger_debug "Generating nginx configuration files for http mode"
+	logger_info "Generating builtin nginx configuration"
 	echo "$(nginx_cfg_main)" > /etc/nginx/nginx.conf
 	echo "$(nginx_cfg_http_default)" > /etc/nginx/conf.d/http_default.conf
-	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
+	echo "$(nginx_cfg_https_default)" > /etc/nginx/conf.d/http_default_ssl.conf
 }
 
 . $libdir/_nginx_cfg_backend.sh

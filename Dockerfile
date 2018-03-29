@@ -19,5 +19,3 @@ COPY extlib/log4sh/log4sh /usr/local/lib
 COPY bin/ /usr/local/bin
 RUN chmod u+x /usr/local/bin/entrypoint.sh
 RUN ln -s /usr/local/bin/entrypoint.sh /entrypoint.sh
-
-COPY conf/* /etc/nginx/conf.d/
