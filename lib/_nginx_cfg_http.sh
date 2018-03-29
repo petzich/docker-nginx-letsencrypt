@@ -1,3 +1,16 @@
+#!/bin/sh
+
+nginx_cfg_http_https_redirect() {
+	retval="
+    location / {
+        return 302 https://\$server_name:${PROXY_HTTPS_PORT}\$request_uri;
+    }
+"
+	echo "$retval"
+}
+
+nginx_cfg_http_default() {
+	retval="
 server {
     auth_basic off;
     listen ${PROXY_HTTP_PORT};
@@ -9,9 +22,7 @@ server {
         root /var/www/html;
     }
 
-    location / {
-        return 302 https://$server_name$request_uri;
-    }
+$(nginx_cfg_http_https_redirect)
 
     # redirect server error pages to the static page /50x.html
     #
@@ -20,4 +31,7 @@ server {
         auth_basic off;
         root   /usr/share/nginx/html;
     }
+}
+"
+	echo "$retval"
 }

@@ -6,6 +6,7 @@ libdir=/usr/local/lib
 . $libdir/_entrypoint_global_vars.sh
 . $libdir/_entrypoint_parse_env.sh
 . $libdir/_nginx_cfg_main.sh
+. $libdir/_nginx_cfg_http.sh
 
 # Prepare envsubst to replace all variables beginning with PROXY_
 function prepare_envsubst(){
@@ -40,7 +41,7 @@ function set_basic_auth(){
 function create_config_files_builtin(){
 	logger_debug "Generating nginx configuration files for http mode"
 	echo "$(nginx_cfg_main)" > /etc/nginx/nginx.conf
-	$envsubst_cmd < /etc/nginx/conf.d/http_default.conf.orig > /etc/nginx/conf.d/http_default.conf
+	echo "$(nginx_cfg_http_default)" > /etc/nginx/conf.d/http_default.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
 }
 
@@ -108,12 +109,6 @@ function enable_disabled_config(){
 	done
 }
 
-# Some setup after certificate generation
-function post_certificate_setup(){
-	# Redirect to https port
-	sed -i "s/^.*return.*$/        return 301 https:\/\/\$server_name:${PROXY_HTTPS_PORT}\$request_uri;/" /etc/nginx/conf.d/http_default.conf
-}
-
 # Create the entries for static files
 function create_static_files_entries(){
 	# Create the entries for static files
@@ -170,7 +165,6 @@ generate_certificate
 killall nginx
 sleep 1
 enable_disabled_config
-post_certificate_setup
 
 copy_extrahtml
 
