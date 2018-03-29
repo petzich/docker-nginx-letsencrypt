@@ -5,6 +5,7 @@ libdir=/usr/local/lib
 . $libdir/_entrypoint_log_setup.sh
 . $libdir/_entrypoint_global_vars.sh
 . $libdir/_entrypoint_parse_env.sh
+. $libdir/_nginx_cfg_main.sh
 
 # Prepare envsubst to replace all variables beginning with PROXY_
 function prepare_envsubst(){
@@ -32,23 +33,13 @@ function set_basic_auth(){
 		logger_info "Setting HTTP basic protection (user: $PROXY_AUTH_USER)"
 		# Create the file first
 		echo "$PROXY_AUTH_USER:{PLAIN}$PROXY_AUTH_PASSWORD" > /etc/nginx/conf.d/auth_basic.inc
-		# Then configure auth_basic in the HTTP section
-		if [ `grep -c "auth_basic" $nginx_conf` -lt 1 ]
-		then
-			# First time
-			sed -i '/^http/a \auth_basic "test";' $nginx_conf
-			sed -i '/^auth_basic\ /a \auth_basic_user_file /etc/nginx/conf.d/auth_basic.inc;' $nginx_conf
-		else
-			sed -i 's/^auth_basic.*$\ /auth_basic "test";/' $nginx_conf
-			sed -i 's/^auth_basic_user_file.*$\ /auth_basic_user_file /etc/nginx/conf.d/auth_basic.inc;/' $nginx_conf
-		fi
 	fi
 }
 
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
 	logger_debug "Generating nginx configuration files for http mode"
-	$envsubst_cmd < /etc/nginx/nginx.conf.orig > /etc/nginx/nginx.conf
+	echo "$(nginx_cfg_main)" > /etc/nginx/nginx.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default.conf.orig > /etc/nginx/conf.d/http_default.conf
 	$envsubst_cmd < /etc/nginx/conf.d/http_default_ssl.conf.orig > /etc/nginx/conf.d/http_default_ssl.conf
 }
