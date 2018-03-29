@@ -11,5 +11,5 @@ nginx_cfg_backend_string () {
 		retval="${retval}$(nginx_cfg_single_backend_line ${backend})\n"
 	done
 	retval="${retval}}"
-	echo -e $retval
+	echo $retval
 }
