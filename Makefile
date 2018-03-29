@@ -1,7 +1,6 @@
 cwd=$(shell pwd)
 DOCKER=sudo docker
 IMAGE_TAG=petzi/nginx-letsencrypt
-TEST_IMAGE=alpine:3.7
 COVERAGE_IMAGE=ragnaroek/kcov_head
 
 .PHONY: default
@@ -16,8 +15,8 @@ clean:
 	- $(DOCKER) rmi ${IMAGE_TAG}
 
 .PHONY: test
-test:
-	$(DOCKER) run -it --volume="${PWD}:/source" --rm ${TEST_IMAGE} /source/test/run-tests.sh
+test: build
+	$(DOCKER) run -it --volume="${PWD}:/source" --entrypoint="/bin/sh" --rm ${IMAGE_TAG} /source/test/run-tests.sh
 
 # --bash-handle-sh-invocation is required, so kcov follows all shell scripts executed
 # in the for loop in the run-tests.sh wrapper script
@@ -28,7 +27,7 @@ coverage:
 
 # A minimal integration test
 .PHONY: integration-test
-integration-test: clean build
+integration-test: build
 	$(DOCKER) run -it --rm \
 		-e "PROXY_MODE=dev" \
 		-e "PROXY_DOMAIN=localhost" \
