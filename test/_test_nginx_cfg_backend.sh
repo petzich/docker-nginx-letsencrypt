@@ -1,7 +1,7 @@
 #! /bin/sh
 
 wd="$(dirname $0)"
-. $wd/../lib/_nginx_cfg_backend.sh
+. ${libdir}/_nginx_cfg_backend.sh
 
 # When only one backend is given
 testSingleBackend(){
@@ -26,4 +26,4 @@ server backend3 max_fails=3 fail_timeout=5s max_conns=50;
 	assertEquals "$expected" "$actual"
 }
 
-. $wd/shunit2/shunit2
+. ${extlibdir}/shunit2/shunit2

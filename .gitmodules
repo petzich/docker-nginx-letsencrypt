@@ -1,6 +1,6 @@
-[submodule "test/shunit2"]
-	path = test/shunit2
-	url = https://github.com/kward/shunit2
 [submodule "extlib/log4sh"]
 	path = extlib/log4sh
 	url = https://github.com/kward/log4sh
+[submodule "extlib/shunit2"]
+	path = extlib/shunit2
+	url = https://github.com/kward/shunit2

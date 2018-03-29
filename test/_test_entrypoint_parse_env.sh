@@ -1,9 +1,8 @@
 #! /bin/sh
 
 wd="$(dirname $0)"
-export libdir="$wd/../lib"
 . $wd/_init_log_setup.sh
-. $wd/../lib/_entrypoint_parse_env.sh
+. ${libdir}/_entrypoint_parse_env.sh
 
 setUp(){
 	unset PROXY_MODE
@@ -81,4 +80,4 @@ testErrorProxyAuthPassword(){
 	assertEquals "$expected" "$actual"
 }
 
-. $wd/shunit2/shunit2
+. ${extlibdir}/shunit2/shunit2

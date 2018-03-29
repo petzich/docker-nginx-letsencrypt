@@ -162,7 +162,6 @@ function copy_extrahtml(){
 }
 
 logger_info "(Nginx-Letsencrypt) starting entrypoint.sh"
-prepare_loglevel
 prepare_proxy_variables
 prepare_envsubst
 create_acme_challenge_dir
