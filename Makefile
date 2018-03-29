@@ -2,6 +2,7 @@ cwd=$(shell pwd)
 DOCKER=sudo docker
 IMAGE_TAG=petzi/nginx-letsencrypt
 TEST_IMAGE=alpine:3.7
+COVERAGE_IMAGE=ragnaroek/kcov_head
 
 .PHONY: default
 default: build
@@ -16,7 +17,14 @@ clean:
 
 .PHONY: test
 test:
-	$(DOCKER) run -it --volume="${PWD}:/host" --rm ${TEST_IMAGE} /host/test/run-tests.sh
+	$(DOCKER) run -it --volume="${PWD}:/source" --rm ${TEST_IMAGE} /source/test/run-tests.sh
+
+# --bash-handle-sh-invocation is required, so kcov follows all shell scripts executed
+# in the for loop in the run-tests.sh wrapper script
+.PHONY: coverage
+coverage:
+	echo "WARNING: coverage support is experimental and does not produce valubale output yet."
+	$(DOCKER) run -it --volume="${PWD}:/source" --rm ${COVERAGE_IMAGE} --bash-method=DEBUG --include-pattern=/source/lib/,/source/test/ /source/.coverage /source/test/run-tests.sh
 
 # A minimal integration test
 .PHONY: integration-test
