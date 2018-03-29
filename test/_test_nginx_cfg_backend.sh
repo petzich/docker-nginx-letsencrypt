@@ -5,10 +5,9 @@ wd="$(dirname $0)"
 
 # When only one backend is given
 testSingleBackend(){
-	expected="server backend1 max_fails=3 fail_timeout=5s max_conns=100;"
-	export PROXY_BACKENDS="backend1"
+	expected="server backend1.example.org max_fails=3 fail_timeout=5s max_conns=100;"
 	export PROXY_TUNING_UPSTREAM_MAX_CONNS=100
-	actual="$(nginx_cfg_backend_string_core)"
+	actual=$(nginx_cfg_single_backend_line "backend1.example.org")
 	assertEquals "$expected" "$actual"
 }
 

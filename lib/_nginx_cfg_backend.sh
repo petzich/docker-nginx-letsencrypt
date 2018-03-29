@@ -1,21 +1,15 @@
 #!/bin/sh
 
-nginx_cfg_backend_string_core () {
-	retval=""
-	counter=0
-	for backend in $PROXY_BACKENDS; do
-		if [ $counter -gt 0 ]; then
-			retval="${retval}\n"
-		fi
-		retval="${retval}server ${backend} max_fails=3 fail_timeout=5s max_conns=${PROXY_TUNING_UPSTREAM_MAX_CONNS};"
-		counter=$(expr $counter + 1)
-	done
-	echo $retval
+nginx_cfg_single_backend_line() {
+	echo "server ${1} max_fails=3 fail_timeout=5s max_conns=${PROXY_TUNING_UPSTREAM_MAX_CONNS};"
 }
 
 nginx_cfg_backend_string () {
 	retval="upstream backend_server {\n"
 	retval="${retval}ip_hash;\n"
-	retval="${retval}$(nginx_cfg_backend_string_core)\n}"
-	echo -en $retval
+	for backend in ${PROXY_BACKENDS}; do
+		retval="${retval}$(nginx_cfg_single_backend_line ${backend})\n"
+	done
+	retval="${retval}}"
+	echo -e $retval
 }
