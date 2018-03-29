@@ -8,6 +8,7 @@ libdir=/usr/local/lib
 . $libdir/_nginx_cfg_main.sh
 . $libdir/_nginx_cfg_http.sh
 . $libdir/_nginx_cfg_https.sh
+. $libdir/_nginx_cfg_backend.sh
 
 # Prepare envsubst to replace all variables beginning with PROXY_
 function prepare_envsubst(){
@@ -44,13 +45,7 @@ function create_config_files_builtin(){
 	echo "$(nginx_cfg_main)" > /etc/nginx/nginx.conf
 	echo "$(nginx_cfg_http_default)" > /etc/nginx/conf.d/http_default.conf
 	echo "$(nginx_cfg_https_default)" > /etc/nginx/conf.d/http_default_ssl.conf
-}
-
-. $libdir/_nginx_cfg_backend.sh
-function create_config_backend(){
-	backend_config_string=$(nginx_cfg_backend_string)
-	logger_debug "backend_config_string: $backend_config_string"
-	echo -e "$backend_config_string" > /etc/nginx/conf.d/http_default_backend.conf
+	echo "$(nginx_cfg_backend_string)" > /etc/nginx/conf.d/http_default_backend.conf
 }
 
 # Disable all files that have ssl configuration if the certificate does not exist on filesystem
@@ -154,7 +149,6 @@ prepare_envsubst
 create_acme_challenge_dir
 create_config_files_builtin
 set_basic_auth
-create_config_backend
 create_static_files_entries
 prepare_extraconf
 
