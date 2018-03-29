@@ -1,6 +1,5 @@
 #! /bin/sh
 
-wd="$(dirname $0)"
 . ${libdir}/_nginx_cfg_backend.sh
 
 # When only one backend is given

@@ -1,7 +1,6 @@
 #! /bin/sh
 
-wd="$(dirname $0)"
-. $wd/_init_log_setup.sh
+. ${testdir}/_init_log_setup.sh
 . ${libdir}/_entrypoint_parse_env.sh
 
 setUp(){
