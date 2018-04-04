@@ -1,8 +1,7 @@
 #!/bin/sh
 
 nginx_cfg_http_https_redirect() {
-	retval="
-    location / {
+	retval="    location / {
         return 302 https://\$server_name:${PROXY_HTTPS_PORT}\$request_uri;
     }
 "
@@ -10,8 +9,7 @@ nginx_cfg_http_https_redirect() {
 }
 
 nginx_cfg_http_default() {
-	retval="
-server {
+	retval="server {
     auth_basic off;
     listen ${PROXY_HTTP_PORT};
     ssl off;
