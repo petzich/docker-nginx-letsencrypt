@@ -4,8 +4,7 @@ nginx_cfg_auth_basic() {
 	retval=""
 	if [ ! -z ${PROXY_AUTH_USER} ]
 	then
-		retval="
-  auth_basic \"test\";
+		retval="  auth_basic \"${PROXY_AUTH_USER}\";
   auth_basic_user_file /etc/nginx/conf.d/auth_basic.inc;
 "
 	fi
@@ -13,8 +12,7 @@ nginx_cfg_auth_basic() {
 }
 
 nginx_cfg_http_section(){
-	retval="
-http {
+	retval="http {
 
 $(nginx_cfg_auth_basic)
 
