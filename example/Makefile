@@ -1,4 +1,6 @@
-COMPOSE=sudo docker-compose
+COMPOSE_VERSION=1.18.0
+COMPOSE_FILE=${PWD}/docker-compose.yml
+COMPOSE=sudo COMPOSE_FILE=${COMPOSE_FILE} docker run -it --rm --volume /var/run/docker.sock:/var/run/docker.sock --mount type=bind,source=${PWD},destination=${PWD},readonly -e COMPOSE_FILE docker/compose:${COMPOSE_VERSION}
 DOCKER=sudo docker
 
 .PHONY: default
