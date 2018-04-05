@@ -29,16 +29,6 @@ function create_acme_challenge_dir(){
 	chown -R nginx:nginx /var/www/html/.well-known
 }
 
-# Set basic_auth in the global http section
-function set_basic_auth(){
-	if [ ! -z ${PROXY_AUTH_USER} ]
-	then
-		logger_info "Setting HTTP basic protection (user: $PROXY_AUTH_USER)"
-		# Create the file first
-		echo "$PROXY_AUTH_USER:{PLAIN}$PROXY_AUTH_PASSWORD" > /etc/nginx/conf.d/auth_basic.inc
-	fi
-}
-
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
 	logger_info "Generating builtin nginx configuration"
@@ -148,7 +138,6 @@ prepare_proxy_variables
 prepare_envsubst
 create_acme_challenge_dir
 create_config_files_builtin
-set_basic_auth
 create_static_files_entries
 prepare_extraconf
 

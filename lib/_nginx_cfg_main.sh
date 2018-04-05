@@ -1,15 +1,6 @@
 #!/bin/sh
 
-nginx_cfg_auth_basic() {
-	retval=""
-	if [ ! -z ${PROXY_AUTH_USER} ]
-	then
-		retval="  auth_basic \"${PROXY_AUTH_USER}\";
-  auth_basic_user_file /etc/nginx/conf.d/auth_basic.inc;
-"
-	fi
-	echo "$retval"
-}
+. $libdir/_nginx_cfg_auth_basic.sh
 
 nginx_cfg_http_section(){
 	retval="http {
@@ -21,7 +12,7 @@ $(nginx_cfg_auth_basic)
 
   log_format  main  '\$remote_addr - \$remote_user [\$time_local] \"\$request\" '
                     '\$status \$body_bytes_sent \"\$http_referer\" '
-                    '\"\$http_user_agent\" \"\$http_x_forwarded_for\"';
+                    '\"\$http_user_agent\" \"\$http_x_forwarded_for\" ';
 
   access_log  /var/log/nginx/access.log  main;
 
