@@ -2,10 +2,6 @@
 
 # Prepare environment variables and set up defaults
 prepare_proxy_variables(){
-	for ev in $env_vars; do
-		logger_debug "$ev: \$$ev"
-	done
-
 	# Set default value of PROXY_MODE to "prod"
 	if [ -z "${PROXY_MODE}" ]
 	then
