@@ -13,9 +13,9 @@ env_replace_in_file() {
 	if [ -f $inFile ]
 	then
 		inString=$(cat $inFile)
-		echo "inString: $inString"
+		logger_trace "inString: $inString"
 		outString=$(env_replace_in_string "$inString" "$varlist")
-		echo "outString: $outString"
+		logger_trace "outString: $outString"
 		echo $outString > $outFile
 	else
 		echo "ERROR: inFile $inFile not found"
@@ -38,9 +38,11 @@ env_replace_in_string() {
 	do
 		local var_clean=$(env_name_cleanup $v)
 		local input="${output}"
-		if [ ! -z \$$var_clean ]
+		local val
+		eval val="\$$var_clean"
+		if [ ! $val = "" ]
 		then
-			eval val="\$$var_clean"
+			logger_trace "processing variable $var_clean, replacing with value $val" >> /dev/stderr
 			# First process curly braces
 			local sed_string_curly="s/\\\${$var_clean}/$val/g"
 			local output_curly=$(echo $input | sed $sed_string_curly)
@@ -48,6 +50,8 @@ env_replace_in_string() {
 			local sed_string_short="s/\\\$$var_clean/$val/g"
 			local output_short=$(echo $output_curly | sed $sed_string_short)
 			local output=$output_short
+		else
+			logger_trace "ignoring variable $var_clean, as it is not set" >> /dev/stderr
 		fi
 	done
 	echo "$output"

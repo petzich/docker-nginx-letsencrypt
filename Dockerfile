@@ -5,7 +5,6 @@ FROM nginx:1.13-alpine
 # openssl for self-signed certificates in dev mode
 RUN apk add --no-cache \
  certbot \
- gettext \
  openssl
 
 VOLUME /etc/letsencrypt/

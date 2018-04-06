@@ -1,6 +1,8 @@
 #! /bin/sh
 
+. ${testdir}/_init_log_setup.sh
 . ${libdir}/_env_replace.sh
+
 inputFile=/tmp/testInput.txt
 outputFile=/tmp/testOutput.txt
 
@@ -30,7 +32,7 @@ testEnvReplaceString(){
 	export b2="two"
 	export c3="three"
 	export d4="four"
-	actual=$(env_replace_in_string "$input" "a1 b2 c3 d4")
+	actual=$(env_replace_in_string "$input" "a1 b2 c3 d4 e5")
 	assertEquals "Hello one, two, three and four" "$actual"
 	actual=$(env_replace_in_string "$input" "a1 c3")
 	assertEquals "Hello one, \${b2}, three and \$d4" "$actual"
