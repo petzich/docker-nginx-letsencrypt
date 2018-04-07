@@ -47,16 +47,22 @@ testMinimalDevConfiguration(){
 
 # Test error message proxydomain
 testErrorProxyDomain(){
-	expected="[ERROR] PROXY_DOMAIN is not set."
-	actual="$(prepare_proxy_variables)"
+	prepare_proxy_variables
+	actual=$?
+	assertEquals "1" "$actual"
+	expected="[FATAL] PROXY_DOMAIN is not set."
+	actual=$(tail -n1 $testStdErr)
 	assertEquals "$expected" "$actual"
 }
 
 # Test error proxyBackends
 testErrorProxyBackends(){
 	export PROXY_DOMAIN="example.org"
-	expected="[ERROR] PROXY_BACKENDS is not set."
-	actual="$(prepare_proxy_variables)"
+	prepare_proxy_variables
+	actual=$?
+	assertEquals "1" "$actual"
+	expected="[FATAL] PROXY_BACKENDS is not set."
+	actual=$(tail -n1 $testStdErr)
 	assertEquals "$expected" "$actual"
 }
 
@@ -64,8 +70,11 @@ testErrorProxyBackends(){
 testErrorProxyCertbotMail(){
 	export PROXY_DOMAIN="example.org"
 	export PROXY_BACKENDS="backend1"
-	expected="[ERROR] PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt."
-	actual="$(prepare_proxy_variables)"
+	prepare_proxy_variables
+	actual=$?
+	assertEquals "1" "$actual"
+	expected="[FATAL] PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt."
+	actual=$(tail -n1 $testStdErr)
 	assertEquals "$expected" "$actual"
 }
 
@@ -74,8 +83,11 @@ testErrorProxyAuthPassword(){
 	export PROXY_CERTBOT_MAIL="test@example.org"
 	export PROXY_BACKENDS="backend1"
 	export PROXY_AUTH_USER="user"
-	expected="[ERROR] PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
-	actual="$(prepare_proxy_variables)"
+	prepare_proxy_variables
+	actual=$?
+	assertEquals "1" "$actual"
+	expected="[FATAL] PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
+	actual=$(tail -n1 $testStdErr)
 	assertEquals "$expected" "$actual"
 }
 

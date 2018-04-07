@@ -21,8 +21,8 @@ prepare_proxy_variables(){
 	# PROXY_DOMAIN must be set, or there is no use in starting the proxy.
 	if [ -z "${PROXY_DOMAIN}" ]
 	then
-		logger_error "PROXY_DOMAIN is not set."
-		exit 1
+		logger_fatal "PROXY_DOMAIN is not set."
+		return 1
 	else
 		le_path="/etc/letsencrypt/live/$PROXY_DOMAIN"
 		le_privkey="$le_path/privkey.pem"
@@ -32,15 +32,15 @@ prepare_proxy_variables(){
 	# PROXY_BACKENDS must be set.
 	if [ -z "${PROXY_BACKENDS}" ]
 	then
-		logger_error "PROXY_BACKENDS is not set."
-		exit 1;
+		logger_fatal "PROXY_BACKENDS is not set."
+		return 1;
 	fi
 
 	# In PROXY_MODE other than dev, PROXY_CERTBOT_MAIL must be set
 	if [ ! "${PROXY_MODE}" = "dev" ] && [ -z "${PROXY_CERTBOT_MAIL}" ]
 	then
-		logger_error "PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt."
-		exit 1
+		logger_fatal "PROXY_CERTBOT_MAIL is not set. It is required for letsencrypt."
+		return 1
 	fi
 
 	# Default values for some variables
@@ -62,7 +62,8 @@ prepare_proxy_variables(){
 	# However, if PROXY_AUTH_USER is set, PROXY_AUTH_PASSWORD must also be set.
 	if [ ! -z $PROXY_AUTH_USER ] && [ -z $PROXY_AUTH_PASSWORD ]
 	then
-		logger_error "PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
+		logger_fatal "PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
+		return 1
 	fi
 
 }
