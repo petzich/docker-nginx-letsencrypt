@@ -31,11 +31,10 @@ function create_config_files_builtin(){
 function disable_ssl_config(){
 	if [ ! -f $le_privkey ] || [ ! -f $le_fullchain ]
 	then
+		logger_info "SSL certificates do not exist. Temporarily disabling configuration files with references to certificates."
 		files_with_cert_refs=`grep -l "ssl_certificate" /etc/nginx/conf.d/*`
 		for f in $files_with_cert_refs; do
-			logger_info "-- Temporarily disabling config (no ssl certificate exists yet)"
-			logger_info "- src:  $f"
-			logger_info "- dst: $f.disabled"
+			logger_debug "Temporarily disabling: $f (rename to: $f.disabled)"
 			mv $f "$f.disabled"
 		done
 	fi
@@ -74,12 +73,11 @@ function generate_certificate(){
 }
 
 function enable_disabled_config(){
+	logger_info "Re-Enabling disabled configuration"
 	disabled_files=`ls -1 /etc/nginx/conf.d/*.disabled 2>/dev/null`
 	for f in $disabled_files; do
 		output_filename=`echo $f | rev | cut -c 10- | rev`
-		logger_info "-- Re-enabling disabled config:"
-		logger_info "- src:  $f"
-		logger_info "- dst: $output_filename"
+		logger_debug "Re-enabling $f (rename to $output_filename)"
 		mv $f $output_filename
 	done
 }
