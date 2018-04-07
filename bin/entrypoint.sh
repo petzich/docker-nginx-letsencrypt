@@ -2,10 +2,10 @@
 
 libdir=/usr/local/lib
 
+. $libdir/_entrypoint_derived_images.sh
 . $libdir/_entrypoint_log_setup.sh
 . $libdir/_entrypoint_global_vars.sh
 . $libdir/_entrypoint_parse_env.sh
-. $libdir/_env_replace.sh
 . $libdir/_nginx_cfg_main.sh
 . $libdir/_nginx_cfg_http.sh
 . $libdir/_nginx_cfg_https.sh
@@ -109,37 +109,17 @@ function create_static_files_entries(){
 	done
 }
 
-# Copy extra configuration (mostly from derived image)
-function prepare_extraconf(){
-	if [ -d /extraconf ]
-	then
-		logger_info "Copying /extraconf to /etc/nginx/conf.d"
-		cp /extraconf/* /etc/nginx/conf.d/
-		cd /etc/nginx/conf.d/
-		for i in `ls -1 stream_*.conf.orig ssl_*.conf.inc.orig`; do
-			output_filename=`echo $i | rev | cut -c 6- | rev`
-			logger_info "Replacing env vars: $i -> $output_filename"
-			env_replace_in_file $i $output_filename "$env_names"
-		done
-		cd
-	fi
-}
-
-# Copy extrahtml
-function copy_extrahtml(){
-	if [ -d /extrahtml ]
-	then
-		cp -a /extrahtml/* /var/www/html/
-	fi
-}
-
 logger_info "(Nginx-Letsencrypt) starting entrypoint.sh"
 prepare_proxy_variables
 prepare_envreplace
 create_acme_challenge_dir
 create_config_files_builtin
 create_static_files_entries
-prepare_extraconf
+
+logger_info "Copying /extraconf"
+copy_files "/extraconf" "/etc/nginx/conf.d"
+logger_info "Replacing environment variables in files in /etc/nginx/conf.d/*.orig"
+files_replace_vars "/etc/nginx/conf.d" "orig" "$env_names"
 
 disable_ssl_config
 logger_debug "Starting nginx in background for certificate generation"
@@ -150,7 +130,8 @@ killall nginx
 sleep 1
 enable_disabled_config
 
-copy_extrahtml
+logger_info "Copying additional html files from /extrahtml"
+copy_files /extrahtml /var/www/html
 
 # And last but not least the most important action: call nginx.
 logger_info "(Nginx-Letsencrypt) at end of entrypoint.sh"
