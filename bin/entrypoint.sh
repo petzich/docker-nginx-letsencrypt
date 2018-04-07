@@ -11,17 +11,6 @@ libdir=/usr/local/lib
 . $libdir/_nginx_cfg_https.sh
 . $libdir/_nginx_cfg_backend.sh
 
-# Prepare names of all variables to replace (beginning with PROXY_)
-function prepare_envreplace(){
-	# All env vars beginning with PROXY_
-	es_vars=`env | grep -Eo "^PROXY_.*=" | sed -E 's/^(PROXY_.*?)=/\1/g'`
-	env_names=""
-	for i in $es_vars; do
-		env_names="$env_names $i"
-	done
-	logger_debug "String of variables to replace: $env_names"
-}
-
 # Create the directory for acme challenges
 function create_acme_challenge_dir(){
 	logger_debug "Generating acme-challenge directory"
@@ -111,7 +100,7 @@ function create_static_files_entries(){
 
 logger_info "(Nginx-Letsencrypt) starting entrypoint.sh"
 prepare_proxy_variables
-prepare_envreplace
+env_replace_names=$(prepare_envreplace)
 create_acme_challenge_dir
 create_config_files_builtin
 create_static_files_entries
@@ -119,7 +108,7 @@ create_static_files_entries
 logger_info "Copying /extraconf"
 copy_files "/extraconf" "/etc/nginx/conf.d"
 logger_info "Replacing environment variables in files in /etc/nginx/conf.d/*.orig"
-files_replace_vars "/etc/nginx/conf.d" "orig" "$env_names"
+files_replace_vars "/etc/nginx/conf.d" "orig" "$env_replace_names"
 
 disable_ssl_config
 logger_debug "Starting nginx in background for certificate generation"

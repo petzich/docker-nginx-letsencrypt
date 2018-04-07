@@ -67,3 +67,37 @@ prepare_proxy_variables(){
 	fi
 
 }
+
+# Prepare names of all variables to replace (beginning with PROXY_)
+prepare_envreplace(){
+	local env_names=$(env_startswith PROXY_)
+	echo "$env_names"
+	logger_debug "String of variables to replace: $env_names"
+}
+
+# Unset all environment variables starting with a certain pattern
+# Parameter:
+# 1. String that an environment variable starts with
+# Example `env_unset_startswith PROXY_`
+env_unset_startswith(){
+	local start=$1
+	local env_names=$(env_startswith $start)
+	local env_name
+	for env_name in $env_names
+	do
+		unset $env_name
+	done
+}
+
+# Output a list of matching environment variables as a list of space-separated names
+# Parameter
+# 1. String, that the environment variable name starts with
+# Example: `env_startswith PROXY_`
+env_startswith(){
+	local start=$1
+	local grep_pattern="^$start.*="
+	local sed_pattern="s/^($start.*?)=/\\1/g"
+	local matching_envs=$(env | grep -Eo $grep_pattern | sed -E $sed_pattern | sort -bd)
+	local single_line=$(echo -n "$matching_envs" | tr '\n' ' ')
+	echo "$single_line"
+}

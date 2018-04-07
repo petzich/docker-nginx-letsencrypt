@@ -4,10 +4,7 @@
 . ${libdir}/_entrypoint_parse_env.sh
 
 setUp(){
-	unset PROXY_MODE
-	unset PROXY_DOMAIN
-	unset PROXY_BACKENDS
-	unset PROXY_CERTBOT_MAIL
+	env_unset_startswith PROXY_
 }
 
 testMinimalProdConfiguration(){
@@ -88,6 +85,33 @@ testErrorProxyAuthPassword(){
 	assertEquals "1" "$actual"
 	expected="[FATAL] PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
 	actual=$(tail -n1 $testStdErr)
+	assertEquals "$expected" "$actual"
+}
+
+testEnvStartsWith(){
+	export TEST_AB="ab"
+	export TEST_1="one"
+	export TEST_2="two"
+	export TEST_CD="cd"
+	export TESTNOT="not_matching"
+	local expected="TEST_1 TEST_2 TEST_AB TEST_CD"
+	local actual=$(env_startswith TEST_)
+	assertEquals "$expected" "$actual"
+	unset TEST_1 TEST_2 TEST_AB TEST_CD
+	local expected=""
+	local actual=$(env_startswith TEST_)
+	assertEquals "$expected" "$actual"
+}
+
+testEnvReplaceNames(){
+	export PROXY_DOMAIN="example.org"
+	export PROXY_CERTBOT_MAIL="test@example.org"
+	export PROXY_BACKENDS="backend1"
+	export PROXY_AUTH_USER="user"
+	export PROXY_SOMETHING_ELSE="else"
+	export NOT_PROXY="not"
+	expected="PROXY_AUTH_USER PROXY_BACKENDS PROXY_CERTBOT_MAIL PROXY_DOMAIN PROXY_SOMETHING_ELSE"
+	actual=$(prepare_envreplace)
 	assertEquals "$expected" "$actual"
 }
 
