@@ -2,6 +2,7 @@
 
 libdir=/usr/local/lib
 
+. $libdir/_cert_functions.sh
 . $libdir/_entrypoint_derived_images.sh
 . $libdir/_entrypoint_log_setup.sh
 . $libdir/_entrypoint_global_vars.sh
@@ -10,13 +11,6 @@ libdir=/usr/local/lib
 . $libdir/_nginx_cfg_http.sh
 . $libdir/_nginx_cfg_https.sh
 . $libdir/_nginx_cfg_backend.sh
-
-# Create the directory for acme challenges
-function create_acme_challenge_dir(){
-	logger_debug "Generating acme-challenge directory"
-	mkdir -p /var/www/html/.well-known/acme-challenge
-	chown -R nginx:nginx /var/www/html/.well-known
-}
 
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
