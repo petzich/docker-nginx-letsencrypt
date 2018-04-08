@@ -14,5 +14,4 @@ env_vars="PROXY_MODE\
 le_path=
 le_privkey=
 le_fullchain=
-le_dev_subject="/C=CH/ST=BE/L=Berne/O=ExampleOrg/OU=Org/CN=localhost"
 env_names=
