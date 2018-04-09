@@ -22,20 +22,21 @@ clean:
 
 .PHONY: test
 test: clean build
-	$(COMPOSE) down -v
+	$(COMPOSE) down
 	$(COMPOSE) run --rm test nginx -t
-	$(COMPOSE) down -v
+	$(COMPOSE) run --rm test nginx -t
+	$(COMPOSE) down
 
 .PHONY: shell
 shell: build
 	echo "entering test machine with /bin/sh"
-	$(COMPOSE) down -v
+	$(COMPOSE) down
 	$(COMPOSE) up -d
 	$(COMPOSE) exec test /bin/sh
-	$(COMPOSE) down -v
+	$(COMPOSE) down
 
 .PHONY: run
 run: build
-	$(COMPOSE) down -v
+	$(COMPOSE) down
 	$(COMPOSE) up
-	$(COMPOSE) down -v
+	$(COMPOSE) down
