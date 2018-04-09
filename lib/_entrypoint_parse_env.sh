@@ -47,6 +47,8 @@ prepare_proxy_variables(){
 	if [ "${PROXY_MODE}" = "dev" ]
 	then
 		cert_method="selfsigned"
+	else
+		cert_method="certbot"
 	fi
 
 	# Default values for some variables
@@ -71,6 +73,9 @@ prepare_proxy_variables(){
 		logger_fatal "PROXY_AUTH_USER was set. PROXY_AUTH_PASSWORD must then also be set."
 		return 1
 	fi
+
+	logger_debug "Entrypoint.sh has initialised all variables. Here is the complete environment:"
+	logger_debug "$(env)"
 
 }
 
