@@ -72,8 +72,8 @@ files_replace_vars "/etc/nginx/conf.d" "orig" "$env_replace_names"
 
 # Does the certificate exist already?
 certificate_exists $le_privkey $le_fullchain
-retval=$?
-if [ "$retval" = "255" ]
+cert_exists=$?
+if [ $cert_exists -eq 255 ]
 then
 	logger_info "No certificate exists yet, generating new certificate"
 	disable_ssl_config
@@ -84,7 +84,7 @@ then
 	killall nginx
 	sleep 1
 	enable_disabled_config
-elif [ "$retval" = "0" ]
+elif [ $cert_exists -eq 0 ]
 then
 	logger_info "Certificates exist already, trying a renew"
 	certificate_renew $le_privkey $le_fullchain $cert_method
