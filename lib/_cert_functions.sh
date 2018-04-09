@@ -16,24 +16,28 @@ create_acme_challenge_dir(){
 # $1: filename of private key
 # $2: filename of public key
 certificate_exists(){
+	local fun="certificate_exists()"
 	local privkey=$1
 	local pubkey=$2
+	logger_trace "$fun: checking existence of $privkey and $pubkey"
 	if [ -f $privkey ] && [ -f $pubkey ]
 	then
+		logger_trace "$fun: Both files exist"
 		return 0
 	elif [ -f $privkey ]
 	then
-		logger_error "Only the private key exists. The public key is missing. This should not normally happen."
-		logger_error "(Present) private key: $privkey"
-		logger_error "(Missing) public key: $pubkey"
+		logger_error "$fun: Only the private key exists. The public key is missing. This should not normally happen."
+		logger_error "$fun: (Present) private key: $privkey"
+		logger_error "$fun: (Missing) public key: $pubkey"
 		return 1
 	elif [ -f $pubkey ]
 	then
-		logger_error "Only the public key exists. The private key is missing. This should not normally happen."
-		logger_error "(Missing) private key: $privkey"
-		logger_error "(Present) public key: $pubkey"
+		logger_error "$fun: Only the public key exists. The private key is missing. This should not normally happen."
+		logger_error "$fun: (Missing) private key: $privkey"
+		logger_error "$fun: (Present) public key: $pubkey"
 		return 2
 	else
+		logger_trace "$fun: No file exists"
 		return 255
 	fi
 }
@@ -45,15 +49,17 @@ certificate_exists(){
 # $4: certbot-domain-name (only required if using certbot)
 # $5: certbot-mail (only required if using certbot)
 certificate_create(){
+	local fun="certificate_create()"
 	local privkey=$1
 	local pubkey=$2
 	local method=$3
 	local certbot_domain=$4
 	local certbot_mail=$5
 	certificate_exists $privkey $pubkey
-	if [ "$?" -le "2" ]
+	local retval=$?
+	if [ $retval -le 2 ]
 	then
-		logger_error "Certificate already exists, not overwriting"
+		logger_error "$fun: Certificate already exists, not overwriting"
 		return 1
 	fi
 		# Creating directories for certificate
@@ -64,16 +70,16 @@ certificate_create(){
 		# Check variables for certbot
 		if [ "$method" = "selfsigned" ]
 		then
-			logger_info "Creating self-signed certificate"
+			logger_debug "$fun: Creating self-signed certificate"
 			openssl req -subj $dev_subject -x509 -sha256 -newkey rsa:1024 -nodes -keyout $privkey -out $pubkey -days 365
 			return 0
 		elif [ "$method" = "certbot" ]
 		then
-			logger_info "Creating letsencrypt certificate"
+			logger_debug "$fun: Creating letsencrypt certificate"
 			certbot certonly -n --webroot -w /var/www/html -d $certbot_domain --agree-tos -m $certbot_mail --keep
 			return 0
 		else
-			logger_error "Method was not 'selfsigned' or 'certbot'"
+			logger_error "$fun: Method was not 'selfsigned' or 'certbot'"
 			return 1
 		fi
 }
@@ -83,28 +89,31 @@ certificate_create(){
 # $2: filename of public key
 # $3: method (either 'selfsigned' or 'certbot')
 certificate_renew(){
+	local fun="certificate_renew()"
 	local privkey=$1
 	local pubkey=$2
 	local method=$3
+	logger_debug "$fun: renewing certificate. privkey: $privkey, pubkey: $pubkey, method: $method"
 	# Check if certificate exists, if not refuse renewal
 	certificate_exists $privkey $pubkey
-	if [ ! "$?" = "0" ]
+	local retval=$?
+	if [ ! $retval -eq 0 ]
 	then
-		logger_error "Certificate does not exist, will not renew"
+		logger_error "$fun: certificate does not exist, will not renew"
 		return 1
 	fi
 	if [ "$method" = "selfsigned" ]
 	then
-		logger_info "Renewing self-signed certificate"
-		certificate_create $privkey $pubkey selfsigned
+		logger_debug "$fun: renewing self-signed certificate"
+		openssl req -subj $dev_subject -x509 -sha256 -newkey rsa:1024 -nodes -keyout $privkey -out $pubkey -days 365
 		return 0
 	elif [ "$method" = "certbot" ]
 	then
-		logger_info "Renewing certbot certificate"
+		logger_debug "$fun: renewing certbot certificate"
 		certbot renew
 		return 0
 	else
-		logger_error "Please provide either method 'selfsigned' or 'certbot'"
+		logger_error "$fun: please provide either method 'selfsigned' or 'certbot'"
 		return 1
 	fi
 }
