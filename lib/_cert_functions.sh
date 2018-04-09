@@ -56,6 +56,11 @@ certificate_create(){
 		logger_error "Certificate already exists, not overwriting"
 		return 1
 	fi
+		# Creating directories for certificate
+		dirpriv=$(dirname $privkey)
+		dirpub=$(dirname $pubkey)
+		mkdir -p $dirpriv
+		mkdir -p $dirpub
 		# Check variables for certbot
 		if [ "$method" = "selfsigned" ]
 		then

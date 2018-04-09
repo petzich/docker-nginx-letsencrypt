@@ -3,8 +3,16 @@
 . ${testdir}/_init_log_setup.sh
 . ${libdir}/_cert_functions.sh
 
-privkey=/tmp/test-privkey
-pubkey=/tmp/test-pubkey
+privkey=/tmp/keys/test-privkey
+dirpriv=$(dirname $privkey)
+pubkey=/tmp/keys/test-pubkey
+dirpub=$(dirname $pubkey)
+
+echo "Variables for cert-test:"
+echo "privkey: $privkey"
+echo "dirpriv: $dirpriv"
+echo "pubkey: $pubkey"
+echo "dirpub: $dirpub"
 
 tearDown(){
 	if [ -d $acme_challenge_dir ]; then rmdir -p $acme_challenge_dir; fi
@@ -20,18 +28,21 @@ testAcmeChallengeDir(){
 }
 
 testCertificateExists(){
+	mkdir -p $dirpriv $dirpub
 	touch $privkey $pubkey
 	certificate_exists $privkey $pubkey
 	assertEquals 0 $?
 }
 
 testCertificateExistsOnlyPrivkey(){
+	mkdir -p $dirpriv
 	touch $privkey
 	certificate_exists $privkey $pubkey
 	assertEquals 1 $?
 }
 
 testCertificateExistsOnlyPubkey(){
+	mkdir -p $dirpub
 	touch $pubkey
 	certificate_exists $privkey $pubkey
 	assertEquals 2 $?
@@ -50,6 +61,7 @@ testCertificateCreateSelfsigned(){
 }
 
 testCertificateCreateSelfsignedRefused(){
+	mkdir -p $dirpriv
 	touch $privkey
 	certificate_create $privkey $pubkey selfsigned
 	assertEquals 1 $?
@@ -65,6 +77,7 @@ testCertificateCreateNonsenseMethod(){
 }
 
 testCertificateUpdateSelfSigned(){
+	mkdir -p $dirpriv $dirpub
 	touch $privkey $pubkey
 	certificate_renew $privkey $pubkey selfsigned
 	assertEquals 0 $?
