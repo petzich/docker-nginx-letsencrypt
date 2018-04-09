@@ -25,44 +25,12 @@ function create_config_files_builtin(){
 function disable_ssl_config(){
 	if [ ! -f $le_privkey ] || [ ! -f $le_fullchain ]
 	then
-		logger_info "SSL certificates do not exist. Temporarily disabling configuration files with references to certificates."
+		logger_info "Temporarily disabling configuration files with references to certificates."
 		files_with_cert_refs=`grep -l "ssl_certificate" /etc/nginx/conf.d/*`
 		for f in $files_with_cert_refs; do
 			logger_debug "Temporarily disabling: $f (rename to: $f.disabled)"
 			mv $f "$f.disabled"
 		done
-	fi
-}
-
-# Generate a certificate
-function generate_certificate(){
-	# In PROXY_MODE dev generate self-signed using openssl
-	# In any other mode, generate using certbot
-	if [ ! -z ${PROXY_MODE} ] && [ ${PROXY_MODE} = "dev" ]
-	then
-		mkdir -p $le_path
-		if [ -f $le_privkey ]
-		then
-			logger_warn "Private key already exists, not overwriting ($le_privkey)"
-		else
-			logger_info "Generating self-signed certificate"
-			openssl req -subj $le_dev_subject -x509 -sha256 -newkey rsa:1024 -nodes -keyout $le_privkey -out $le_fullchain -days 365
-		fi
-	elif [ -f "$le_fullchain" ]
-	then
-		logger_info "Renewing certificate"
-		certbot renew
-	else
-		# certbot is run with the following options:
-		# certonly (installing in nginx is not yet supported)
-		# -n        = non-interactive (this is a script, after all)
-		# --webroot = webroot method to /var/www/html
-		# -d        = domain is passed as ENV variable
-		# --agree-tos   = agree to terms of service (non-interactive)
-		# -m            = mail address for letsencrypt account
-		# --keep        = do not replace existing certificate, unless expiry is close
-		logger_info "Generating certificate"
-		certbot certonly -n --webroot -w /var/www/html -d ${PROXY_DOMAIN} --agree-tos -m ${PROXY_CERTBOT_MAIL} --keep
 	fi
 }
 
@@ -102,14 +70,26 @@ copy_files "/extraconf" "/etc/nginx/conf.d"
 logger_info "Replacing environment variables in files in /etc/nginx/conf.d/*.orig"
 files_replace_vars "/etc/nginx/conf.d" "orig" "$env_replace_names"
 
-disable_ssl_config
-logger_debug "Starting nginx in background for certificate generation"
-exec nginx &
-sleep 1
-generate_certificate
-killall nginx
-sleep 1
-enable_disabled_config
+# Does the certificate exist already?
+certificate_exists $le_privkey $le_fullchain
+retval=$?
+if [ "$retval" = "255" ]
+then
+	logger_info "No certificate exists yet, generating new certificate"
+	disable_ssl_config
+	exec nginx &
+	sleep 1
+	certificate_create $le_privkey $le_fullchain $cert_method
+	# generate_certificate
+	killall nginx
+	sleep 1
+	enable_disabled_config
+elif [ "$retval" = "0" ]
+then
+	logger_info "Certificates exist already, trying a renew"
+	certificate_renew $le_privkey $le_fullchain $cert_method
+	nginx -t && nginx -s reload
+fi
 
 logger_info "Copying additional html files from /extrahtml"
 copy_files /extrahtml /var/www/html
