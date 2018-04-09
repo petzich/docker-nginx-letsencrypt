@@ -43,6 +43,12 @@ prepare_proxy_variables(){
 		return 1
 	fi
 
+	# In PROXY_MODE dev, we want the cert_method to be selfsigned
+	if [ "${PROXY_MODE}" = "dev" ]
+	then
+		cert_method="selfsigned"
+	fi
+
 	# Default values for some variables
 	if [ -z $PROXY_HTTP_PORT ]; then
 		export PROXY_HTTP_PORT="80"

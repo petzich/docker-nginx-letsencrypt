@@ -11,6 +11,7 @@ env_vars="PROXY_MODE\
 	PROXY_AUTH_PASSWORD\
 	PROXY_TUNING_WORKER_CONNECTIONS\
 	PROXY_TUNING_UPSTREAM_MAX_CONNS"
+cert_method=certbot
 le_path=
 le_privkey=
 le_fullchain=
