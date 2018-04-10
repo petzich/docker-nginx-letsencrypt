@@ -2,10 +2,18 @@
 
 . $libdir/_nginx_cfg_auth_basic.sh
 
+# Main http section
+# Parameters (optional):
+# $1: basic auth user
+# $2: basic auth password
+# $3: basic auth realm
 nginx_cfg_http_section(){
+	local user=$1
+	local password=$2
+	local realm=$3
 	retval="http {
 
-$(nginx_cfg_auth_basic)
+$(nginx_cfg_auth_basic $user $password $realm)
 
   include       /etc/nginx/mime.types;
   default_type  application/octet-stream;
@@ -27,7 +35,15 @@ $(nginx_cfg_auth_basic)
 	echo "$retval"
 }
 
+# Main configuraton
+# Parameters. Either all or none must be supplied
+# $1: basic auth user
+# $2: basic auth password
+# $3: basic auth realm
 nginx_cfg_main() {
+	local user=$1
+	local password=$2
+	local realm=$3
 	retval="
 daemon off;
 user nginx;
@@ -39,7 +55,7 @@ events {
   worker_connections 128;
 }
 
-$(nginx_cfg_http_section)
+$(nginx_cfg_http_section $user $password $realm)
 
 stream {
   include /etc/nginx/conf.d/stream_*.conf;

@@ -2,12 +2,6 @@
 
 . ${libdir}/_nginx_cfg_main.sh
 
-setUp(){
-	unset PROXY_DOMAIN
-	unset PROXY_AUTH_USER
-	unset PROXY_AUTH_PASSWORD
-}
-
 # Test the http section (empty)
 testHttpSectionEmpty(){
 	expected="http {
@@ -34,9 +28,6 @@ testHttpSectionEmpty(){
 
 # Test the http section (empty)
 testHttpSectionBasicAuth(){
-	export PROXY_DOMAIN="test.example.org"
-	export PROXY_AUTH_USER="testuser"
-	export PROXY_AUTH_PASSWORD="testpassword"
 	expected="http {
 
   auth_basic \"test.example.org\";
@@ -58,7 +49,7 @@ testHttpSectionBasicAuth(){
 
   include /etc/nginx/conf.d/http_*.conf;
 }"
-	actual=$(nginx_cfg_http_section)
+	actual=$(nginx_cfg_http_section "testuser" "testpassword" "test.example.org")
 	assertEquals "$expected" "$actual"
 }
 
