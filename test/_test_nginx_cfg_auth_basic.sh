@@ -4,47 +4,37 @@
 authBasicFile="/etc/nginx/conf.d/auth_basic.inc"
 
 setUp(){
-	unset PROXY_DOMAIN
-	unset PROXY_AUTH_USER
-	unset PROXY_AUTH_PASSWORD
 	if [ -f $authBasicFile ]; then rm $authBasicFile; fi
 }
 
 testAuthBasicFileContent() {
-	export PROXY_AUTH_USER="testUser"
-	export PROXY_AUTH_PASSWORD="testPassword!äöü"
 	expected="testUser:{PLAIN}testPassword!äöü"
-	actual=$(nginx_cfg_auth_basic_file_content)
-	assertEquals "$expected" "$actual"
-}
-
-testAuthBasicFileContentMissingUser() {
-	export PROXY_AUTH_PASSWORD="testPassword!äöü"
-	expected=""
-	actual=$(nginx_cfg_auth_basic_file_content)
+	actual=$(nginx_cfg_auth_basic_file_content "testUser" "testPassword!äöü")
 	assertEquals "$expected" "$actual"
 }
 
 testAuthBasicFileContentMissingPassword() {
-	export PROXY_AUTH_USER="testUser"
+	expected=""
+	actual=$(nginx_cfg_auth_basic_file_content "testUser")
+	assertEquals "$expected" "$actual"
+}
+
+testAuthBasicFileContentMissingParams() {
 	expected=""
 	actual=$(nginx_cfg_auth_basic_file_content)
 	assertEquals "$expected" "$actual"
 }
 
 testAuthBasicFile() {
-	export PROXY_AUTH_USER="testUser"
-	export PROXY_AUTH_PASSWORD="testPassword!äöü"
 	expected="testUser:{PLAIN}testPassword!äöü"
-	$(nginx_cfg_auth_basic_file)
+	$(nginx_cfg_auth_basic_file "testUser" "testPassword!äöü")
 	assertTrue "[ -f $authBasicFile ]" 
 	actual=$(cat $authBasicFile)
 	assertEquals "$expected" "$actual"
 }
 
 testAuthBasicFileEmpty() {
-	export PROXY_AUTH_USER="testUser"
-	$(nginx_cfg_auth_basic_file)
+	$(nginx_cfg_auth_basic_file "testUser")
 	assertTrue "[ ! -f $authBasicFile ]" 
 }
 
@@ -52,10 +42,7 @@ testAuthBasicFileEmpty() {
 testAuthBasicConfig(){
 	expected="  auth_basic \"test.my.example.org\";
   auth_basic_user_file /etc/nginx/conf.d/auth_basic.inc;"
-  	export PROXY_DOMAIN="test.my.example.org"
-	export PROXY_AUTH_USER="testUser"
-	export PROXY_AUTH_PASSWORD="testPassword!äöü"
-	actual=$(nginx_cfg_auth_basic)
+	actual=$(nginx_cfg_auth_basic "testUser" "testPassword!äöü" "test.my.example.org")
 	assertEquals "$expected" "$actual"
 	assertTrue "[ -e $authBasicFile ]"
 	expected2="testUser:{PLAIN}testPassword!äöü"

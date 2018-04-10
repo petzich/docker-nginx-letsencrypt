@@ -3,30 +3,51 @@
 authBasicFile="/etc/nginx/conf.d/auth_basic.inc"
 
 # Creates the content to put in the auth basic file
+# Parameters:
+# $1 user
+# $2 password
 nginx_cfg_auth_basic_file_content(){
-	retval=""
-	if [ ! -z ${PROXY_AUTH_USER} ] && [ ! -z ${PROXY_AUTH_PASSWORD} ]
+	local user=$1
+	local password=$2
+	local retval=""
+	if [ ! -z $user ] && [ ! -z $password ]
 	then
-		retval="$PROXY_AUTH_USER:{PLAIN}$PROXY_AUTH_PASSWORD"
+		local retval="$user:{PLAIN}$password"
 	fi
 	echo "$retval"
 }
 
 # Creates the file with the auth basic user/password
+# Parameters:
+# $1: user
+# $2: password
 nginx_cfg_auth_basic_file(){
-	basicContent=$(nginx_cfg_auth_basic_file_content)
-	if [ ! $basicContent = "" ]
+	local user=$1
+	local password=$2
+	if [ ! -z $user ] && [ ! -z $password ]
 	then
-		echo "$basicContent" > $authBasicFile
+		basicContent=$(nginx_cfg_auth_basic_file_content $user $password)
+		if [ ! $basicContent = "" ]
+		then
+			echo "$basicContent" > $authBasicFile
+		fi
 	fi
 }
 
+# Return the basic section and create the basic auth file
+# Parameters:
+# $1: user
+# $2: password
+# $3: domain/realm
 nginx_cfg_auth_basic() {
+	local user=$1
+	local password=$2
+	local realm=$3
 	retval=""
-	if [ ! -z ${PROXY_AUTH_USER} ]
+	if [ ! -z $user ] && [ ! -z $password ] && [ ! -z $realm ]
 	then
-		nginx_cfg_auth_basic_file
-		retval="  auth_basic \"${PROXY_DOMAIN}\";
+		nginx_cfg_auth_basic_file $user $password
+		retval="  auth_basic \"$realm\";
   auth_basic_user_file ${authBasicFile};
 "
 	fi
