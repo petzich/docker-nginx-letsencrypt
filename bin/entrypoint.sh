@@ -84,11 +84,6 @@ then
 	killall nginx
 	sleep 1
 	enable_disabled_config
-elif [ $cert_exists -eq 0 ]
-then
-	logger_info "Certificates exist already, trying a renew"
-	certificate_renew $le_privkey $le_fullchain $cert_method
-	nginx -t && nginx -s reload
 fi
 
 logger_info "Copying additional html files from /extrahtml"

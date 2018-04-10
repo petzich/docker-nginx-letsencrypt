@@ -16,5 +16,6 @@ COPY lib/ /usr/local/lib
 COPY extlib/log4sh/log4sh /usr/local/lib
 
 COPY bin/ /usr/local/bin
-RUN chmod u+x /usr/local/bin/entrypoint.sh
+RUN chmod u+x /usr/local/bin/*.sh
 RUN ln -s /usr/local/bin/entrypoint.sh /entrypoint.sh
+RUN ln -s /usr/local/bin/cert-renew.sh /cert-renew.sh
