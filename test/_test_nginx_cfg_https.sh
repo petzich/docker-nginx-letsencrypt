@@ -10,8 +10,6 @@ setUp(){
 
 # Test the https default section
 testHttpsDefault(){
-	export PROXY_DOMAIN="ssl.example.org"
-	export PROXY_HTTPS_PORT="5443"
 	expected="
 server {
   listen 5443;
@@ -38,7 +36,7 @@ server {
     root   /usr/share/nginx/html;
   }
 }"
-	actual=$(nginx_cfg_https_default)
+	actual=$(nginx_cfg_https_default ssl.example.org 5443)
 	assertEquals "$expected" "$actual"
 }
 

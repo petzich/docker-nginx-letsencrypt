@@ -1,18 +1,24 @@
 #!/bin/sh
 
+# Configure main https section
+# Parameters:
+# $1: domain
+# $2: https port
 nginx_cfg_https_default() {
+	local domain=$1
+	local https_port=$2
 	retval="
 server {
-  listen ${PROXY_HTTPS_PORT};
+  listen $https_port;
   ssl on;
-  ssl_certificate     /etc/letsencrypt/live/${PROXY_DOMAIN}/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/${PROXY_DOMAIN}/privkey.pem;
+  ssl_certificate     /etc/letsencrypt/live/$domain/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/$domain/privkey.pem;
 
   include conf.d/default_static_dirs.conf.inc;
 
   location / {
     proxy_pass http://backend_server/;
-    proxy_set_header Host ${PROXY_DOMAIN};
+    proxy_set_header Host $domain;
     proxy_set_header X-Forwarded-Proto \$scheme;
 
     # Extension point for derived images
