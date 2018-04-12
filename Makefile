@@ -20,6 +20,7 @@ clean:
 test: build
 	$(DOCKER) run -it \
 		--volume="${PWD}:/source" \
+		--volume="${PWD}/.testlogs:/testlogs" \
 		--entrypoint="/bin/sh" \
 		--rm \
 		${IMAGE_TAG} \

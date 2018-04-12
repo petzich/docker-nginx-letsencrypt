@@ -7,8 +7,8 @@
 
 wd=$(dirname $0)
 
-testStdErr="/tmp/testStdErr"
-testTraceLog="/tmp/testTraceLog"
+testStdErr="/testlogs/testStdErr"
+testTraceLog="/testlogs/testTraceLog"
 
 # Generate the logging files
 echo "" > $testStdErr
