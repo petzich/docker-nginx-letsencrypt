@@ -11,6 +11,7 @@ libdir=/usr/local/lib
 . $libdir/_nginx_cfg_http.sh
 . $libdir/_nginx_cfg_https.sh
 . $libdir/_nginx_cfg_backend.sh
+. $libdir/_nginx_cfg_ssl.sh
 
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
@@ -19,29 +20,6 @@ function create_config_files_builtin(){
 	echo "$(nginx_cfg_http_default $PROXY_DOMAIN $PROXY_HTTP_PORT $PROXY_HTTPS_PORT)" > /etc/nginx/conf.d/http_default.conf
 	echo "$(nginx_cfg_https_default $PROXY_DOMAIN $PROXY_HTTPS_PORT)" > /etc/nginx/conf.d/http_default_ssl.conf
 	echo "$(nginx_cfg_backend_string "$PROXY_BACKENDS" $PROXY_TUNING_UPSTREAM_MAX_CONNS)" > /etc/nginx/conf.d/http_default_backend.conf
-}
-
-# Disable all files that have ssl configuration if the certificate does not exist on filesystem
-function disable_ssl_config(){
-	if [ ! -f $le_privkey ] || [ ! -f $le_fullchain ]
-	then
-		logger_info "Temporarily disabling configuration files with references to certificates."
-		files_with_cert_refs=`grep -l "ssl_certificate" /etc/nginx/conf.d/*`
-		for f in $files_with_cert_refs; do
-			logger_debug "Temporarily disabling: $f (rename to: $f.disabled)"
-			mv $f "$f.disabled"
-		done
-	fi
-}
-
-function enable_disabled_config(){
-	logger_info "Re-Enabling disabled configuration"
-	disabled_files=`ls -1 /etc/nginx/conf.d/*.disabled 2>/dev/null`
-	for f in $disabled_files; do
-		output_filename=`echo $f | rev | cut -c 10- | rev`
-		logger_debug "Re-enabling $f (rename to $output_filename)"
-		mv $f $output_filename
-	done
 }
 
 # Create the entries for static files
@@ -76,14 +54,14 @@ cert_exists=$?
 if [ $cert_exists -eq 255 ]
 then
 	logger_info "No certificate exists yet, generating new certificate"
-	disable_ssl_config
+	ssl_conf_disable
 	exec nginx &
 	sleep 1
 	certificate_create $le_privkey $le_fullchain $cert_method
 	# generate_certificate
 	killall nginx
 	sleep 1
-	enable_disabled_config
+	ssl_conf_enable
 fi
 
 logger_info "Copying additional html files from /extrahtml"
