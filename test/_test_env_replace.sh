@@ -52,6 +52,13 @@ testEnvReplaceStringWithWhitespace(){
 	assertEquals "Hello one two three" "$actual"
 }
 
+testEnvReplaceStringSpecialChars(){
+	input='${special}'
+	export special='/\\,^$'
+	actual=$(env_replace_in_string "$input" "special")
+	assertEquals '/\,^$' "$actual"
+}
+
 testEnvReplaceFileSimple(){
 	export a1="one" b2="two" c3="three" d4="four"
 	echo 'Hello ${a1}, ${b2}, $c3 and $d4.' > $inputFile
@@ -68,6 +75,15 @@ testEnvReplaceFileSomeMissing() {
 	expected="Hello one, \${b2}, one and \$b2"
 	actual=$(cat "$outputFile")
 	assertEquals "$expected" "$actual"
+}
+
+testEscapeRegex(){
+	local input='\#'
+	local actual=$(escape_regex $input)
+	assertEquals '\\#' "$actual"
+	local input='#'
+	local actual=$(escape_regex $input)
+	assertEquals '\#' "$actual"
 }
 
 . ${extlibdir}/shunit2/shunit2

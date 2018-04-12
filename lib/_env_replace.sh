@@ -44,10 +44,10 @@ env_replace_in_string() {
 		then
 			logger_trace "processing variable $var_clean, replacing with value $val" >> /dev/stderr
 			# First process curly braces
-			local sed_string_curly="s/\\\${$var_clean}/$val/g"
+			local sed_string_curly="s#\\\${$var_clean}#$val#g"
 			local output_curly=$(echo $input | sed "$sed_string_curly")
 			# Then process without curly braces
-			local sed_string_short="s/\\\$$var_clean/$val/g"
+			local sed_string_short="s#\\\$$var_clean#$val#g"
 			local output_short=$(echo $output_curly | sed "$sed_string_short")
 			local output=$output_short
 		else
@@ -62,5 +62,14 @@ env_replace_in_string() {
 # 1. environment variable name
 env_name_cleanup(){
 	local retval=$(echo "$1" | sed -e 's/[^a-zA-Z0-9_]//g')
+	echo "$retval"
+}
+
+# Escape special characters for regex processing
+# Parameters:
+# $1: the string (quote)
+escape_regex(){
+	local input=$1
+	local retval=$(echo "$input" | sed -e 's/#/\\#/g')
 	echo "$retval"
 }
