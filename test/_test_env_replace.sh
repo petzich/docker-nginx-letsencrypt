@@ -45,6 +45,13 @@ testEnvReplaceString(){
 	assertEquals "Hello one and one" "$actual"
 }
 
+testEnvReplaceStringWithWhitespace(){
+	input='Hello ${whitespace}'
+	export whitespace="one two three"
+	actual=$(env_replace_in_string "$input" "whitespace")
+	assertEquals "Hello one two three" "$actual"
+}
+
 testEnvReplaceFileSimple(){
 	export a1="one" b2="two" c3="three" d4="four"
 	echo 'Hello ${a1}, ${b2}, $c3 and $d4.' > $inputFile
