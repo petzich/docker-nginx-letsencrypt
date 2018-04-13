@@ -12,6 +12,7 @@ libdir=/usr/local/lib
 . $libdir/_nginx_cfg_https.sh
 . $libdir/_nginx_cfg_backend.sh
 . $libdir/_nginx_cfg_ssl.sh
+. $libdir/_nginx_cfg_static.sh
 
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
@@ -20,20 +21,7 @@ function create_config_files_builtin(){
 	echo "$(nginx_cfg_http_default $PROXY_DOMAIN $PROXY_HTTP_PORT $PROXY_HTTPS_PORT)" > /etc/nginx/conf.d/http_default.conf
 	echo "$(nginx_cfg_https_default $PROXY_DOMAIN $PROXY_HTTPS_PORT)" > /etc/nginx/conf.d/http_default_ssl.conf
 	echo "$(nginx_cfg_backend_string "$PROXY_BACKENDS" $PROXY_TUNING_UPSTREAM_MAX_CONNS)" > /etc/nginx/conf.d/http_default_backend.conf
-}
-
-# Create the entries for static files
-function create_static_files_entries(){
-	# Create the entries for static files
-	stat="/etc/nginx/conf.d/default_static_dirs.conf.inc"
-	echo "" > $stat
-	for i in $PROXY_STATIC_DIRS
-	do
-		location=`echo $i | awk -F"," '{print $1}'`
-		directory=`echo $i | awk -F"," '{print $2}'`
-		logger_info "Creating static entry: $location -> $directory"
-		echo "location /$location/ { root $directory; }" >> $stat
-	done
+	echo "$(nginx_cfg_static_string "$PROXY_STATIC_DIRS")" > /etc/nginx/conf.d/default_static_dirs.conf.inc
 }
 
 logger_info "(Nginx-Letsencrypt) starting entrypoint.sh"
@@ -41,7 +29,6 @@ prepare_proxy_variables
 env_replace_names=$(prepare_envreplace)
 create_acme_challenge_dir
 create_config_files_builtin
-create_static_files_entries
 
 logger_info "Copying /extraconf"
 copy_files "/extraconf" "/etc/nginx/conf.d"
