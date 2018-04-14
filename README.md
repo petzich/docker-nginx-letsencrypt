@@ -89,7 +89,11 @@ https://localhost:2443/ (requires authentication test:password)
 
 Pull requests and issues are welcome. As a rule of thumb, pull requests will be processed faster than issues.
 
-# Developping
+## Get started
+
+```
+git clone --recurse-submodules git@github.com:petzich/docker-nginx-letsencrypt.git
+```
 
 1. Install docker (CE) on your local machine.
 1. run `make`
