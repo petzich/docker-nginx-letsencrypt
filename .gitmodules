@@ -4,3 +4,6 @@
 [submodule "extlib/shunit2"]
 	path = extlib/shunit2
 	url = https://github.com/kward/shunit2
+[submodule "extlib/shflags"]
+	path = extlib/shflags
+	url = https://github.com/kward/shflags.git

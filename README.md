@@ -35,6 +35,26 @@ An example: `css,/var/www/html images,/` will map:
 * `/css/` onto `/var/www/html/css`
 * `/images/` onto `/images/`
 
+## Online reconfiguration
+
+There are two scripts to help you execute operations in a running container.
+
+### cert-renew.sh
+
+Lets you renew the certificate(s).
+
+### backend-reconfigure.sh
+
+Lets you temporarily disable or enable certain backends. The setting is *not* persisted on container restarts.
+
+```
+# Enable only backend1.example.org, disable all other backends
+./backend-reconfigure.sh --enable backend1.example.org
+# Disable only backend1.example.org, enable all other backends
+./backend-reconfigure.sh --disable backend1.example.org
+# Enable all backends (which is what happens by default when starting the container)
+./backend-reconfigure.sh --all
+
 ## Extending
 
 You can extend the image with your own configuration. Make your derived docker image by using
