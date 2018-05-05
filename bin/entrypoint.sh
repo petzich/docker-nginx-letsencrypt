@@ -40,7 +40,7 @@ certificate_exists $le_privkey $le_fullchain
 cert_exists=$?
 if [ $cert_exists -eq 255 ]
 then
-	logger_info "No certificate exists yet, generating new certificate"
+	logger_info "No certificate exists yet. Creating a new certificate."
 	ssl_conf_disable
 	exec nginx &
 	sleep 1
@@ -49,6 +49,8 @@ then
 	killall nginx
 	sleep 1
 	ssl_conf_enable
+else
+	logger_info "Certificate exist already. Not creating a certificate."
 fi
 
 logger_info "Copying additional html files from /extrahtml"
