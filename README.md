@@ -54,6 +54,8 @@ Lets you temporarily disable or enable certain backends. The setting is *not* pe
 ./backend-reconfigure.sh --disable backend1.example.org
 # Enable all backends (which is what happens by default when starting the container)
 ./backend-reconfigure.sh --all
+# List all backends
+./backend-reconfigure.sh --list
 ```
 
 ## Extending
