@@ -2,6 +2,12 @@
 
 This project tries to follow [Semantic Versioning](http://semver.org/).
 
+## [0.8.1]
+
+### Fixed
+
+- Entrypoint: pass all parameters for first-time certificate creation.
+
 ## [0.8.0]
 
 ### Added
