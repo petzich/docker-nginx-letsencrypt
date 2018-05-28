@@ -67,7 +67,6 @@ certificate_create(){
 		dirpub=$(dirname $pubkey)
 		mkdir -p $dirpriv
 		mkdir -p $dirpub
-		# Check variables for certbot
 		if [ "$method" = "selfsigned" ]
 		then
 			logger_debug "$fun: Creating self-signed certificate"
@@ -75,9 +74,15 @@ certificate_create(){
 			return 0
 		elif [ "$method" = "certbot" ]
 		then
-			logger_debug "$fun: Creating letsencrypt certificate"
-			certbot certonly -n --webroot -w /var/www/html -d $certbot_domain --agree-tos -m $certbot_mail --keep
-			return 0
+			if [ -z ${certbot_domain} ] || [ -z ${certbot_mail} ]
+			then
+				logger_error "$fun: variable certbot_domain or certbot_mail are not set"
+				return 1
+			else
+				logger_debug "$fun: Creating letsencrypt certificate. Domain: $certbot_domain. Mail: $certbot_mail."
+				certbot certonly -n --webroot -w /var/www/html -d $certbot_domain --agree-tos -m $certbot_mail --keep
+				return 0
+			fi
 		else
 			logger_error "$fun: Method was not 'selfsigned' or 'certbot'"
 			return 1

@@ -71,6 +71,20 @@ testCertificateCreateSelfsignedRefused(){
 
 # TODO: Test certbot without requiring letsencrypt server
 
+testCertificateCreateLetsencryptRefused(){
+	# Test with both variables missing
+	certificate_create $privkey $pubkey certbot
+	assertEquals 1 $?
+	expected="[ERROR] certificate_create(): variable certbot_domain or certbot_mail are not set"
+	actual=$(tail -n1 $testStdErr)
+	assertEquals "$expected" "$actual"
+	# Test with one variable missing
+	certificate_create $privkey $pubkey certbot "my.example.org"
+	assertEquals 1 $?
+	actual=$(tail -n1 $testStdErr)
+	assertEquals "$expected" "$actual"
+}
+
 testCertificateCreateNonsenseMethod(){
 	certificate_create $privkey $pubkey nonsense
 	assertEquals 1 $?

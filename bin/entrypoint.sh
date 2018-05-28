@@ -44,7 +44,7 @@ then
 	ssl_conf_disable
 	exec nginx &
 	sleep 1
-	certificate_create $le_privkey $le_fullchain $cert_method
+	certificate_create $le_privkey $le_fullchain $cert_method $PROXY_DOMAIN $PROXY_CERTBOT_MAIL
 	# generate_certificate
 	killall nginx
 	sleep 1
