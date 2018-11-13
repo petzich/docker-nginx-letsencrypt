@@ -16,7 +16,6 @@ testHttpDefault(){
 	expected="server {
     auth_basic off;
     listen 8080;
-    ssl off;
     server_name test.example.org;
 
     location /.well-known/ {

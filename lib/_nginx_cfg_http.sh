@@ -24,7 +24,6 @@ nginx_cfg_http_default() {
 	retval="server {
     auth_basic off;
     listen $http_port;
-    ssl off;
     server_name $domain;
 
     location /.well-known/ {
