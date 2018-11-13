@@ -2,6 +2,12 @@
 
 This project tries to follow [Semantic Versioning](http://semver.org/).
 
+## [0.9.1] - 2018-11-13
+
+### Fixed
+
+- Lib: remove deprecated ssl directive
+
 ## [0.9.0] - 2018-11-13
 
 ### Changed
