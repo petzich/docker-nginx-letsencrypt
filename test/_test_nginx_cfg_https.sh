@@ -12,8 +12,7 @@ setUp(){
 testHttpsDefault(){
 	expected="
 server {
-  listen 5443;
-  ssl on;
+  listen 5443 ssl;
   ssl_certificate     /etc/letsencrypt/live/ssl.example.org/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/ssl.example.org/privkey.pem;
 
