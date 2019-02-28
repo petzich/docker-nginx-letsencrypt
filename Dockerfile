@@ -1,4 +1,4 @@
-FROM nginx:1.15.6-alpine
+FROM nginx:1.15.9-alpine
 
 # certbot from letsencrypt
 # gettext for envsubst
