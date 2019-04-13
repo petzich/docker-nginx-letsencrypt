@@ -2,6 +2,12 @@
 
 This project tries to follow [Semantic Versioning](http://semver.org/).
 
+## [0.9.4] - 2019-04-13
+
+### Changed
+
+- Docker: upgrade nginx (1.15.9 -> 1.15.11)
+
 ## [0.9.3] - 2019-02-28
 
 ### Changed
