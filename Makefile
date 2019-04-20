@@ -8,13 +8,17 @@ COVERAGE_DIR=.coverage
 default: build
 
 .PHONY: build
-build:
+build: submodule-init
 	$(DOCKER) build --tag ${IMAGE_TAG} .
 
 .PHONY: clean
 clean:
 	- sudo rm -rf ${COVERAGE_DIR}
 	- $(DOCKER) rmi ${IMAGE_TAG}
+
+.PHONY: submodule-init
+submodule-init:
+	git submodule update --init
 
 .PHONY: test
 test: build
