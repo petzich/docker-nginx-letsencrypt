@@ -6,7 +6,7 @@ This project tries to follow [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Entrypoint: remove comments of /extraconf/*.conf.orig before to compile
+- Entrypoint: remove comments in /extraconf/*.orig files before to compile
 
 ## [0.9.5] - 2019-04-20
 
