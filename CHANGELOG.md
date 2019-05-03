@@ -2,6 +2,12 @@
 
 This project tries to follow [Semantic Versioning](http://semver.org/).
 
+## [0.9.6] - 2019-05-03
+
+### Fixed
+
+- Entrypoint: remove comments of /extraconf/*.conf.orig before to compile
+
 ## [0.9.5] - 2019-04-20
 
 ### Changed
