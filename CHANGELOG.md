@@ -6,7 +6,7 @@ This project tries to follow [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Entrypoint: remove comments in /extraconf/*.orig files before to compile
+- Lib: use envsubst to process environment variable replacements
 
 ## [0.9.5] - 2019-04-20
 

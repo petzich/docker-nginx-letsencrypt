@@ -10,51 +10,37 @@ env_replace_in_file() {
 	inFile=$1
 	outFile=$2
 	varlist=$3
+	logger_debug "varlist: $varlist"
 	if [ -f $inFile ]
 	then
-		inString=$(cat $inFile)
-		logger_trace "inString: $inString"
-		outString=$(env_replace_in_string "$inString" "$varlist")
-		logger_trace "outString: $outString"
-		echo $outString > $outFile
+		es_vars=$(env_prepare_variable_list "$varlist")
+		logger_debug "es_vars: $es_vars"
+		envsubst "${es_vars}" < $inFile >$outFile
 	else
 		echo "ERROR: inFile $inFile not found"
 	fi
 }
 
-# Replace environment variables in a string
-# This is a private API
-# Parameters
-# 1. Input variable (containing a string)
-# 2. Whitelist of environment variables. Separated by <space>.
-# Output: the string with the variables replaced
-env_replace_in_string() {
-	local input=$1
-	local varlist=$2
-	# Initialise output with input
-	local output=$input		
-	local v
-	for v in $varlist
+# Process the variable list
+# The input list is a space-separated list of variable names
+# The output is a list of variables in "shell"-style for envsubst
+# The output is also processed by cleaning the variable names
+# Example input: "a1 a2 a3"
+# Example output: "${a1} ${a2} ${a3}"
+env_prepare_variable_list() {
+	local invars=$1
+	for v in ${invars}
 	do
 		local var_clean=$(env_name_cleanup $v)
-		local input="${output}"
-		local val
-		eval val="\$$var_clean"
-		if [ ! "$val" = "" ]
-		then
-			logger_trace "processing variable $var_clean, replacing with value $val" >> /dev/stderr
-			# First process curly braces
-			local sed_string_curly="s#\\\${$var_clean}#$val#g"
-			local output_curly=$(echo $input | sed "$sed_string_curly")
-			# Then process without curly braces
-			local sed_string_short="s#\\\$$var_clean#$val#g"
-			local output_short=$(echo $output_curly | sed "$sed_string_short")
-			local output=$output_short
-		else
-			logger_trace "ignoring variable $var_clean, as it is not set" >> /dev/stderr
-		fi
+		outvars_cleaned="${outvars_cleaned} ${var_clean}"
 	done
-	echo "$output"
+	export $outvars_cleaned
+	for outvar in ${outvars_cleaned}
+	do
+		outvars="${outvars} \${${outvar}}"
+	done
+	# xargs is used to trim whitespace
+	echo "$outvars" | xargs
 }
 
 # Restrict the name of environment variables to [a-zA-Z0-9_]
