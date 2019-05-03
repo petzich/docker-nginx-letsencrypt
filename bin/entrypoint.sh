@@ -24,6 +24,14 @@ function create_config_files_builtin(){
 	echo "$(nginx_cfg_static_string "$PROXY_STATIC_DIRS")" > /etc/nginx/conf.d/default_static_dirs.conf.inc
 }
 
+function remove_comments_in_files(){
+	logger_info "Removing comments in $1"
+	for file in $1
+	do
+		grep -o '^[^#]*' "$file" > "$file"
+	done
+}
+
 logger_info "(Nginx-Letsencrypt) starting entrypoint.sh"
 prepare_proxy_variables
 env_replace_names=$(prepare_envreplace)
@@ -32,6 +40,7 @@ create_config_files_builtin
 
 logger_info "Copying /extraconf"
 copy_files "/extraconf" "/etc/nginx/conf.d"
+remove_comments_in_files "/etc/nginx/conf.d/*.orig"
 logger_info "Replacing environment variables in files in /etc/nginx/conf.d/*.orig"
 files_replace_vars "/etc/nginx/conf.d" "orig" "$env_replace_names"
 
