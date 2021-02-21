@@ -6,6 +6,8 @@
 testHttpSectionEmpty(){
 	expected="http {
 
+
+
   include       /etc/nginx/mime.types;
   default_type  application/octet-stream;
 
@@ -67,6 +69,8 @@ events {
 }
 
 http {
+
+
 
   include       /etc/nginx/mime.types;
   default_type  application/octet-stream;
