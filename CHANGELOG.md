@@ -2,7 +2,15 @@
 
 This project tries to follow [Semantic Versioning](http://semver.org/).
 
+## [0.9.9] - 2021-02-21
+
+### Fixed
+
+- Tests: failing tests due to new newlines
+
 ## [0.9.8] - 2021-02-21
+
+### Changed
 
 - Docker: upgrade alpine (1.17.8 -> 1.19.6)
 
