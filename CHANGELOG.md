@@ -2,6 +2,12 @@
 
 This project tries to follow [Semantic Versioning](http://semver.org/).
 
+## [0.9.10] - 2021-06-25
+
+### Fixed
+
+- Lib: actually set the value for worker connections
+
 ## [0.9.9] - 2021-02-21
 
 ### Fixed

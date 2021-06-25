@@ -35,15 +35,27 @@ $(nginx_cfg_auth_basic $user $password $realm)
 	echo "$retval"
 }
 
+# Worker connections snippet
+nginx_cfg_worker_connections() {
+	local worker_connections=$1
+	if [ -z "${worker_connections}" ]; then
+		worker_connections="512"
+	fi
+	retval="worker_connections $worker_connections;"
+	echo "$retval"
+}
+
 # Main configuraton
 # Parameters. Either all or none must be supplied
 # $1: basic auth user
 # $2: basic auth password
 # $3: basic auth realm
+# $4: number of worker connections
 nginx_cfg_main() {
 	local user=$1
 	local password=$2
 	local realm=$3
+	local worker_connections=$4
 	retval="
 daemon off;
 user nginx;
@@ -52,7 +64,7 @@ error_log /var/log/nginx/error.log warn;
 pid       /var/run/nginx.pid;
 
 events {
-  worker_connections 128;
+  $(nginx_cfg_worker_connections $worker_connections)
 }
 
 $(nginx_cfg_http_section $user $password $realm)
