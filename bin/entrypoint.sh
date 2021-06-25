@@ -17,7 +17,7 @@ libdir=/usr/local/lib
 # Create configuration files for HTTP mode
 function create_config_files_builtin(){
 	logger_info "Generating builtin nginx configuration"
-	echo "$(nginx_cfg_main $PROXY_AUTH_USER $PROXY_AUTH_PASSWORD $PROXY_DOMAIN)" > /etc/nginx/nginx.conf
+	echo "$(nginx_cfg_main $PROXY_AUTH_USER $PROXY_AUTH_PASSWORD $PROXY_DOMAIN $PROXY_TUNING_WORKER_CONNECTIONS)" > /etc/nginx/nginx.conf
 	echo "$(nginx_cfg_http_default $PROXY_DOMAIN $PROXY_HTTP_PORT $PROXY_HTTPS_PORT)" > /etc/nginx/conf.d/http_default.conf
 	echo "$(nginx_cfg_https_default $PROXY_DOMAIN $PROXY_HTTPS_PORT)" > /etc/nginx/conf.d/http_default_ssl.conf
 	echo "$(nginx_cfg_backend_string "$PROXY_BACKENDS" $PROXY_TUNING_UPSTREAM_MAX_CONNS)" > /etc/nginx/conf.d/http_default_backend.conf

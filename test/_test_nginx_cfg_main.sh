@@ -55,7 +55,7 @@ testHttpSectionBasicAuth(){
 	assertEquals "$expected" "$actual"
 }
 
-# Test the main configuration
+# Test the main configuration with default settings
 testMainConfigEmpty(){
 	expected="
 daemon off;
@@ -65,7 +65,7 @@ error_log /var/log/nginx/error.log warn;
 pid       /var/run/nginx.pid;
 
 events {
-  worker_connections 128;
+  worker_connections 512;
 }
 
 http {
