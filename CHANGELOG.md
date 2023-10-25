@@ -4,7 +4,7 @@ This project tries to follow [Semantic Versioning](http://semver.org/).
 
 ## [0.9.13] - 2023-10-24
 
-- Docker: upgrade nginx (1.23.2 -> 1.25.2)
+- Docker: upgrade nginx (1.23.2 -> 1.25.3)
 
 ## [0.9.12] - 2022-10-30
 
