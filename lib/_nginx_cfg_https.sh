@@ -9,7 +9,7 @@ nginx_cfg_https_default() {
 	local https_port=$2
 	retval="
 server {
-  listen $https_port ssl;
+  listen $https_port ssl http2;
   ssl_certificate     /etc/letsencrypt/live/$domain/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/$domain/privkey.pem;
 

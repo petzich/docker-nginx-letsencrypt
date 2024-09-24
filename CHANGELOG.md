@@ -2,6 +2,14 @@
 
 This project tries to follow [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+## [0.9.14] - 2024-09-24
+
+### Added
+
+- Lib: add HTTP2 configuration to the nginx configuration
+
 ## [0.9.13] - 2023-10-31
 
 - Docker: upgrade nginx (1.23.2 -> 1.25.3)
