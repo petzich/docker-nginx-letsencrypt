@@ -4,6 +4,8 @@ This project tries to follow [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+## [0.9.14] - 2024-09-24
+
 ### Added
 
 - Lib: add HTTP2 configuration to the nginx configuration
