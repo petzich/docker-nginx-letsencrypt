@@ -4,6 +4,12 @@ This project tries to follow [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+## [0.9.15]
+
+### Added
+
+- Lib: add cache-control headers to the nginx configuration
+
 ## [0.9.14] - 2024-09-24
 
 ### Added
