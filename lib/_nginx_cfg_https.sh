@@ -5,9 +5,9 @@
 # $1: domain
 # $2: https port
 nginx_cfg_https_default() {
-	local domain=$1
-	local https_port=$2
-	retval="
+  local domain=$1
+  local https_port=$2
+  retval="
 server {
   listen $https_port ssl http2;
   ssl_certificate     /etc/letsencrypt/live/$domain/fullchain.pem;
@@ -24,8 +24,15 @@ server {
     include conf.d/ssl_*.conf.inc;
   }
 
+  # enable cache-control headers for assets
+  location ~* \.(js|css|jpg|jpeg|png|gif|ico|webp|avif|avifs)$ {
+    expires 1y;
+    etag off;
+    if_modified_since off;
+    add_header Cache-Control "public, no-transform";
+  }
+
   # redirect server error pages to the static page /50x.html
-  #
   error_page   500 502 503 504  /50x.html;
   location = /50x.html {
     auth_basic off;
@@ -33,5 +40,5 @@ server {
   }
 }
 "
-	echo "$retval"
+  echo "$retval"
 }
