@@ -25,7 +25,7 @@ server {
   }
 
   # enable cache-control headers for assets
-  location ~* \.(js|css|jpg|jpeg|png|gif|js|css|ico|webp|avif|avifs)$ {
+  location ~* \.(js|css|jpg|jpeg|png|gif|ico|webp|avif|avifs)$ {
     expires 1y;
     etag off;
     if_modified_since off;
